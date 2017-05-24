@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--MultiWiiWinGUI, Version 2.3.6353.399-->
+<!--GUI Settings-->
+<!--Do not change this file manually, unless you know what are you doing-->
+<PARAMETERS>
+    <FCVERSION value="23" />
+    <LOGFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Logs" />
+    <CAPTUREFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Captures" />
+    <SETTINGSFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Settings" />
+    <LOGATCONNECT value="False" />
+    <SERIALPORT value="" />
+    <SERIALSPEED value="115200" />
+    <LOGRAW value="False" />
+    <LOGATT value="False" />
+    <LOGMAG value="False" />
+    <LOGRCC value="False" />
+    <LOGRCX value="False" />
+    <LOGMOT value="False" />
+    <LOGSRV value="False" />
+    <LOGNAV value="False" />
+    <LOGPAR value="False" />
+    <LOGDBG value="False" />
+    <MAPPROVIDER value="1" />
+    <SPEECH_ENABLED value="True" />
+    <ANNOUNCE_ALT value="False" />
+    <ANNOUNCE_VBAT value="False" />
+    <ANNOUNCE_DIST value="False" />
+    <ANNOUNCE_INTERVAL value="2" />
+    <CELLCOUNT value="3" />
+    <MAX_WP_NUMBER value="100" />
+    <WP_RADIUS value="200" />
+</PARAMETERS>

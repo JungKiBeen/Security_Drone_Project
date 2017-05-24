@@ -1,0 +1,737 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/Resources
+END
+Altimeter_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/57/trunk/WinGui2/MultiWiiWinGUI/Resources/Altimeter_Background.bmp
+END
+flight_here.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/flight_here.png
+END
+TurnCoordinatorBall.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/TurnCoordinatorBall.bmp
+END
+reset.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/reset.png
+END
+AirSpeedIndicator_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/AirSpeedIndicator_Background.bmp
+END
+heli_90.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/heli_90.bmp
+END
+TurnCoordinatorMarks.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/TurnCoordinatorMarks.bmp
+END
+TurnCoordinator_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/TurnCoordinator_Background.bmp
+END
+airplane.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/airplane.bmp
+END
+up_btn.png
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/41/trunk/WinGui2/MultiWiiWinGUI/Resources/up_btn.png
+END
+back-arrow.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/back-arrow.png
+END
+home.png
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/home.png
+END
+disconnect.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/disconnect.png
+END
+write_to_file.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/write_to_file.png
+END
+marker_hex6p.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_hex6p.png
+END
+i_green_off.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/44/trunk/WinGui2/MultiWiiWinGUI/Resources/i_green_off.bmp
+END
+hex6x.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/hex6x.bmp
+END
+marker_y4.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_y4.png
+END
+checkbox_legend.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/checkbox_legend.bmp
+END
+marker_tri.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_tri.png
+END
+marker_y6.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_y6.png
+END
+octo8coax.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/octo8coax.bmp
+END
+roll.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/roll.bmp
+END
+marker_hex6x.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_hex6x.png
+END
+AirSpeedNeedle.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/AirSpeedNeedle.bmp
+END
+hex6.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/hex6.bmp
+END
+marker_octoflatx.png
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_octoflatx.png
+END
+marker_oktoflatp.png
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_oktoflatp.png
+END
+numbers.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/57/trunk/WinGui2/MultiWiiWinGUI/Resources/numbers.bmp
+END
+HeadingWeel.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/HeadingWeel.bmp
+END
+octo8p.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/octo8p.bmp
+END
+i_red_on.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/44/trunk/WinGui2/MultiWiiWinGUI/Resources/i_red_on.bmp
+END
+down_btn.png
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/41/trunk/WinGui2/MultiWiiWinGUI/Resources/down_btn.png
+END
+Maquette_Avion.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Maquette_Avion.bmp
+END
+read_settings1.png
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/read_settings1.png
+END
+motors_background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/motors_background.bmp
+END
+LongNeedleAltimeter.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/LongNeedleAltimeter.bmp
+END
+octo8x.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/octo8x.bmp
+END
+VerticalSpeedIndicator_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/57/trunk/WinGui2/MultiWiiWinGUI/Resources/VerticalSpeedIndicator_Background.bmp
+END
+trash.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/83/trunk/WinGui2/MultiWiiWinGUI/Resources/trash.png
+END
+marker_heli.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_heli.png
+END
+gps_direction.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_direction.bmp
+END
+splash.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/61/trunk/WinGui2/MultiWiiWinGUI/Resources/splash.bmp
+END
+SmallNeedleAltimeter.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/SmallNeedleAltimeter.bmp
+END
+marker_poi.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_poi.png
+END
+home_marker.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/home_marker.png
+END
+bar_background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/bar_background.bmp
+END
+gps_right_led_red.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_right_led_red.bmp
+END
+rc_control.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/Resources/rc_control.bmp
+END
+plane.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/plane.png
+END
+wpicon.png
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/43/trunk/WinGui2/MultiWiiWinGUI/Resources/wpicon.png
+END
+bicopter.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/bicopter.bmp
+END
+VerticalSpeedNeedle.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/VerticalSpeedNeedle.bmp
+END
+gps_left_led_green.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_left_led_green.bmp
+END
+quadp.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/quadp.bmp
+END
+Indicator_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Indicator_Background.bmp
+END
+toggle_off.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/toggle_off.bmp
+END
+fw.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/fw.bmp
+END
+navi-warning.wav
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/72/trunk/WinGui2/MultiWiiWinGUI/Resources/navi-warning.wav
+END
+write_settings.png
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/write_settings.png
+END
+marker_fwing.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_fwing.png
+END
+marker_quadp.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_quadp.png
+END
+quadx.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/quadx.bmp
+END
+poshold_unlim.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/44/trunk/WinGui2/MultiWiiWinGUI/Resources/poshold_unlim.png
+END
+marker_octop8.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_octop8.png
+END
+wizard_7.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/85/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard_7.bmp
+END
+Horizon_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Horizon_Background.bmp
+END
+gps_background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_background.bmp
+END
+marker_quadx.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_quadx.png
+END
+gps_right_led_green.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_right_led_green.bmp
+END
+gps_sat_red.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_sat_red.bmp
+END
+marker_octox8.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_octox8.png
+END
+map_point.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/map_point.png
+END
+Bandeau_Dérouleur.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Bandeau_D%C3%A9rouleur.bmp
+END
+wizard-1.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-1.bmp
+END
+tri.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/tri.bmp
+END
+marker_blue.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_blue.png
+END
+wizard-2.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-2.bmp
+END
+connect.png
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/connect.png
+END
+wizard-3.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-3.bmp
+END
+rcexpo.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/rcexpo.bmp
+END
+wizard-4.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-4.bmp
+END
+marker_bi.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_bi.png
+END
+read_settings.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/read_settings.png
+END
+wizard-5.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-5.bmp
+END
+heli_120.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/heli_120.bmp
+END
+wizard-6.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/wizard-6.bmp
+END
+Horizon_empty_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Horizon_empty_Background.bmp
+END
+pitch.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/pitch.bmp
+END
+HeadingIndicator_Aircraft.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/HeadingIndicator_Aircraft.bmp
+END
+load_from_file.png
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/load_from_file.png
+END
+TurnCoordinatorAircraft.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/TurnCoordinatorAircraft.bmp
+END
+timed_marker.png
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/timed_marker.png
+END
+earth-3.png
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/earth-3.png
+END
+sensor_pane.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/sensor_pane.bmp
+END
+about.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/about.png
+END
+gps_sat_green.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_sat_green.bmp
+END
+gps_left_led_red.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gps_left_led_red.bmp
+END
+marker_land.png
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/92/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_land.png
+END
+home.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/83/trunk/WinGui2/MultiWiiWinGUI/Resources/home.bmp
+END
+logbrowser.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/logbrowser.png
+END
+gimbal.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/gimbal.bmp
+END
+HeadingIndicator_Background.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/HeadingIndicator_Background.bmp
+END
+y4.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/y4.bmp
+END
+stop_log.png
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/stop_log.png
+END
+Horizon_GroundSky.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/Horizon_GroundSky.bmp
+END
+y6.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/y6.bmp
+END
+quad.png
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/quad.png
+END
+bluehome.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/83/trunk/WinGui2/MultiWiiWinGUI/Resources/bluehome.bmp
+END
+marker_airplane.png
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_airplane.png
+END
+poshold_markert.png
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/poshold_markert.png
+END
+start_log.png
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/start_log.png
+END
+i_green_on.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/44/trunk/WinGui2/MultiWiiWinGUI/Resources/i_green_on.bmp
+END
+ttest.png
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/ttest.png
+END
+marker_vtail4.png
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/75/trunk/WinGui2/MultiWiiWinGUI/Resources/marker_vtail4.png
+END
+battery_indicator_background.png
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/Resources/battery_indicator_background.png
+END
+i_red_off.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/44/trunk/WinGui2/MultiWiiWinGUI/Resources/i_red_off.bmp
+END
+map_point1.png
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/87/trunk/WinGui2/MultiWiiWinGUI/Resources/map_point1.png
+END
+del_btn.png
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/41/trunk/WinGui2/MultiWiiWinGUI/Resources/del_btn.png
+END
+toggle_on.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/20/trunk/WinGui2/MultiWiiWinGUI/Resources/toggle_on.bmp
+END
+poshold.png
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/43/trunk/WinGui2/MultiWiiWinGUI/Resources/poshold.png
+END
+vtail.bmp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/29/trunk/WinGui2/MultiWiiWinGUI/Resources/vtail.bmp
+END

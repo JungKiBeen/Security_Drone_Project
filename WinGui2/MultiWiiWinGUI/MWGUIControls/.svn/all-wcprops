@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/101/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls
+END
+MWGUIControlsResources.Designer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/MWGUIControlsResources.Designer.cs
+END
+battery_indicator_control.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/battery_indicator_control.cs
+END
+altitude_meter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/71/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/altitude_meter.cs
+END
+MWGUIControlsResources.resx
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/MWGUIControlsResources.resx
+END
+motors_control.cs
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/motors_control.cs
+END
+CheckBoxEx.cs
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/CheckBoxEx.cs
+END
+rc_input_control.cs
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/94/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/rc_input_control.cs
+END
+gps_indicator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/gps_indicator.cs
+END
+GUIControl.cs
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/GUIControl.cs
+END
+vertical_speed_meter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/57/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/vertical_speed_meter.cs
+END
+indicator_lamp.cs
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/101/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/indicator_lamp.cs
+END
+ColorProgressBar.cs
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/68/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/ColorProgressBar.cs
+END
+artifical_horizont.cs
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/artifical_horizont.cs
+END
+heading_indicator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/heading_indicator.cs
+END
+rc_expo_control.cs
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/rc_expo_control.cs
+END
+throttle_expo_control.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/35/trunk/WinGui2/MultiWiiWinGUI/MWGUIControls/throttle_expo_control.cs
+END
