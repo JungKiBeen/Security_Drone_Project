@@ -9,6 +9,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -22,6 +24,8 @@ public class MainActivity extends Activity {
 
     TextView tv;
     ToggleButton tb;
+    EditText edittext;
+    Button b;
 
     private Socket socket;
     BufferedReader socket_in;
@@ -29,6 +33,8 @@ public class MainActivity extends Activity {
 
     TextView output;
     String data;
+    String ipad;
+    boolean is_valid;
 
 
     @Override
@@ -53,11 +59,54 @@ public class MainActivity extends Activity {
 
         tv = (TextView) findViewById(R.id.textView2);
         tv.setText("");
-
+        edittext = (EditText)findViewById(R.id.edittext);
         tb = (ToggleButton)findViewById(R.id.toggle1);
+        b = (Button)findViewById(R.id.btn1);
 
         // LocationManager 객체를 얻어온다
         final LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        b.setOnClickListener(new Button.OnClickListener()
+        {
+            @Override public void onClick(View view)
+            {
+                ipad = edittext.getText().toString();
+
+                Thread worker = new Thread()
+                {
+                    public void run()
+                    {
+                        try {
+                            socket = new Socket(ipad, 5555);        // 정기빈: 서버  측 아이피 주소
+                            socket_out = new PrintWriter(socket.getOutputStream(), true);
+
+                            socket_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                        try
+                        {
+                            while (true)
+                            {
+                                data = socket_in.readLine();
+                                output.post(new Runnable() {
+                                    public void run() {
+                                        output.setText(data);
+                                    }
+                                });
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                };
+                worker.start();
+
+            }
+
+        }) ;
 
 
         tb.setOnClickListener(new View.OnClickListener()
@@ -70,20 +119,22 @@ public class MainActivity extends Activity {
                     if(tb.isChecked())
                     {
 
+
                         tv.setText("Connected..");
 
                         // 정기빈 : 로케이션 매니져 객체에 GPS 위치제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         // GPS 제공자의 정보가 바뀌면 콜백하도록 리스너 등록하기~!!!
                         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, // 등록할 위치제공자
-                                100, // 통지사이의 최소 시간간격 (miliSecond)
+                                1, // 통지사이의 최소 시간간격 (miliSecond)
                                 1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                         // 정기빈 : 로케이션 매니져 객체에 NETWORK 위치 제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자
-                                100, // 통지사이의 최소 시간간격 (miliSecond)
+                                1, // 통지사이의 최소 시간간격 (miliSecond)
                                 1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
+
                     }
 
                     else
@@ -91,48 +142,13 @@ public class MainActivity extends Activity {
                         tv.setText("Disconnected..");
                         lm.removeUpdates(mLocationListener);  //  미수신할때는 반드시 자원해체를 해주어야 한다.
 
-                        try {
-                            socket.close();
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
+
                     }
                 }
                 catch(SecurityException ex){}
             }
         });
-        Thread worker = new Thread()
-        {
-            public void run()
-            {
-                try {
-                    socket = new Socket("203.252.53.54", 5555);        // 정기빈: 서버  측 아이피 주소
-                    socket_out = new PrintWriter(socket.getOutputStream(), true);
 
-                    socket_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                } catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-
-                try
-                {
-                    while (true)
-                    {
-                        data = socket_in.readLine();
-                        output.post(new Runnable() {
-                            public void run() {
-                                output.setText(data);
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                }
-            }
-        };
-        worker.start();
 
     } // end of onCreate
 
@@ -150,11 +166,14 @@ public class MainActivity extends Activity {
 
     private final LocationListener mLocationListener = new LocationListener()
     {
+
+
         // 정기빈 : 100ms(시간),1m(거리간격) 으로 콜 됨
         public void onLocationChanged(Location location)
         {
             //여기서 위치값이 갱신되면 이벤트가 발생한다.
             //값은 Location 형태로 리턴되며 좌표 출력 방법은 다음과 같다.
+
 
             Log.d("test", "onLocationChanged, location:" + location);
             double longitude = location.getLongitude(); //경도
@@ -174,7 +193,6 @@ public class MainActivity extends Activity {
             {
                 socket_out.println(data);
             }
-
         }
 
         public void onProviderDisabled(String provider) {

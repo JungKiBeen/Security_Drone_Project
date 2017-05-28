@@ -38,25 +38,30 @@ using System.Speech.Synthesis;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+
 
 namespace MultiWiiWinGUI
 {
 
     public partial class mainGUI : Form
     {
+        public static string ipad = "115.145.227.196";
 
-        #region Common variables (properties)
-
+        #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
 
-        PointLatLng user_gps;
-
         public static Socket Server, Client;
-
+        public PointLatLng user_gps;
         public static byte[] getByte = new byte[1024];
         public static byte[] setByte = new byte[1024];
 
         /* 정기빈 : 추가 변수 */
+
+        #endregion
+
+        #region Common variables (properties)
+
 
         public const int sPort = 5000;
 
@@ -69,13 +74,16 @@ namespace MultiWiiWinGUI
 
         static string sOptionsConfigFilename = "optionsconfig";
         const string sGuiSettingsFilename = "gui_settings.xml";
-        enum CopterType { Tri = 1, QuadP, QuadX, BI, Gimbal, Y6, Hex6, FlyWing, Y4,
-            Hex6X, OctoX8, OctoFlatX, OctoFlatP, Airplane, Heli_120_CCPM, Heli_90_DEG, Vtail4, 
-            Hex6H, PPM_to_Servo, DualCopter, Singlecopter };
-        
+        enum CopterType
+        {
+            Tri = 1, QuadP, QuadX, BI, Gimbal, Y6, Hex6, FlyWing, Y4,
+            Hex6X, OctoX8, OctoFlatX, OctoFlatP, Airplane, Heli_120_CCPM, Heli_90_DEG, Vtail4,
+            Hex6H, PPM_to_Servo, DualCopter, Singlecopter
+        };
+
 
         string[] sGpsMode = { "None", "PosHold", "RTH", "Mission" };
-        string[] sNavState = { "None", "RTH Start", "RTH Enroute", "PosHold infinit", "PosHold timed", "WP Enroute", "Process next","Jump","Start Land","Land in Progress","Landed","Settling before land","Start descent" };
+        string[] sNavState = { "None", "RTH Start", "RTH Enroute", "PosHold infinit", "PosHold timed", "WP Enroute", "Process next", "Jump", "Start Land", "Land in Progress", "Landed", "Settling before land", "Start descent" };
 
         string[] sNavError = { "Navigation system is working.",
                                "Next waypoint distance is more than the safety limit, aborting mission",
@@ -146,7 +154,7 @@ namespace MultiWiiWinGUI
 
         static Scale xScale;
 
-        CheckBoxEx[, ,] aux;
+        CheckBoxEx[,,] aux;
         indicator_lamp[] indicators;
         indicator_lamp[] indicators_mission;
 
@@ -206,8 +214,8 @@ namespace MultiWiiWinGUI
         // markers
         GMarkerGoogle currentMarker;
         GMapMarkerRect CurentRectMarker = null;
-        GMapMarker center; 
-        GMapMarker markerGoToClick = new GMarkerGoogle(new PointLatLng(0.0, 0.0),GMarkerGoogleType.lightblue);
+        GMapMarker center;
+        GMapMarker markerGoToClick = new GMarkerGoogle(new PointLatLng(0.0, 0.0), GMarkerGoogleType.lightblue);
 
         List<PointLatLng> points = new List<PointLatLng>();
 
@@ -280,6 +288,99 @@ namespace MultiWiiWinGUI
 
         #endregion
 
+
+        #region 정기빈 추가 함수
+        // 정기빈 : 추가함수
+
+        [STAThread]
+        private void socket_communication()
+        {
+            string stringbyte = null;
+            IPAddress serverIP = IPAddress.Parse(ipad);
+            IPEndPoint serverEndPoint = new IPEndPoint(serverIP, 5555);
+
+            try
+            {
+                Server = new Socket(
+                  AddressFamily.InterNetwork,
+                  SocketType.Stream, ProtocolType.Tcp);
+
+                Server.Bind(serverEndPoint);
+                Server.Listen(10);
+
+                Client = Server.Accept();
+
+                if (Client.Connected)
+                {
+                    user_gps.Lat = 0.0;
+                    user_gps.Lng = 0.0;
+
+                    while (true)
+                    {
+                        double Lat, Lng;
+                        Client.Receive(getByte, 0, getByte.Length, SocketFlags.None);
+                        stringbyte = Encoding.UTF7.GetString(getByte);
+
+                        if (stringbyte != String.Empty)
+                        {
+                            int getValueLength = 0;
+                            getValueLength = byteArrayDefrag(getByte);
+
+                            stringbyte = Encoding.UTF7.GetString(
+                              getByte, 0, getValueLength + 1);
+
+                            string[] strlist = stringbyte.Split('\x020');
+
+                            Lat = Convert.ToDouble(strlist[0]);
+                            Lng = Convert.ToDouble(strlist[1]);
+
+                            if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
+                            {
+                                user_gps.Lat = Lat;
+                                user_gps.Lng = Lng;
+                                addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+
+                            }
+
+                            setByte = Encoding.UTF7.GetBytes(stringbyte);
+                            Client.Send(setByte, 0, setByte.Length, SocketFlags.None);
+                        }
+
+                        getByte = new byte[1024];
+                        setByte = new byte[1024];
+                    }
+                }
+            }
+            catch (System.Net.Sockets.SocketException socketEx) { }
+            catch (System.Exception commonEx) { }
+            finally
+            {
+                Server.Close();
+                Client.Close();
+                new Thread(new ThreadStart(socket_communication)).Start();
+            }
+        }
+
+
+        public static int byteArrayDefrag(byte[] sData)
+        {
+            int endLength = 0;
+
+            for (int i = 0; i < sData.Length; i++)
+            {
+                if ((byte)sData[i] != (byte)0)
+                {
+                    endLength = i;
+                }
+            }
+
+            return endLength;
+        }
+
+        // 정기빈 : 추가함수
+
+        #endregion
+
         public mainGUI()
         {
             InitializeComponent();
@@ -313,7 +414,7 @@ namespace MultiWiiWinGUI
             MainMap.OnMarkerEnter += new MarkerEnter(MainMap_OnMarkerEnter);
             MainMap.OnMarkerLeave += new MarkerLeave(MainMap_OnMarkerLeave);
 
-            currentMarker = new GMarkerGoogle(MainMap.Position,GMarkerGoogleType.red);
+            currentMarker = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.red);
             //MainMap.MapScaleInfoEnabled = true;
 
             MainMap.ForceDoubleBuffer = true;
@@ -351,7 +452,7 @@ namespace MultiWiiWinGUI
             GMRouteFlightPath.Stroke = penRoute;
             GMOverlayFlightPath.Routes.Add(GMRouteFlightPath);
 
-            center = new GMarkerGoogle(MainMap.Position,GMarkerGoogleType.blue_dot);
+            center = new GMarkerGoogle(MainMap.Position, GMarkerGoogleType.blue_dot);
             //center = new GMapMarkerCross(MainMap.Position);
 
             MainMap.Invalidate(false);
@@ -363,6 +464,11 @@ namespace MultiWiiWinGUI
 
         private void mainGUI_Load(object sender, EventArgs e)
         {
+            /* 정기빈 : 비동기 소켓 추가*/
+            new Thread(new ThreadStart(socket_communication)).Start();
+
+            /* 정기빈 : 비동기 소켓 추가*/
+
             //First step, check it gui_settings file is exists or not, if not then start settings wizard
             if (!File.Exists(sGuiSettingsFilename))
             {
@@ -872,7 +978,7 @@ namespace MultiWiiWinGUI
             MainMap.Invalidate(false);
 
             int w = MainMap.Size.Width;
-            MainMap.Width = w +1 ;
+            MainMap.Width = w + 1;
             MainMap.Width = w;
             MainMap.ShowCenter = false;
 
@@ -932,10 +1038,10 @@ namespace MultiWiiWinGUI
             for (int i = 0; i < iCheckBoxItems; i++)
             {
                 indicators_mission[i] = new indicator_lamp();
-                indicators_mission[i].Location = new Point(startx , starty + i * 19);
+                indicators_mission[i].Location = new Point(startx, starty + i * 19);
                 indicators_mission[i].Text = names[i];
                 indicators_mission[i].indicator_color = 1;
-                indicators_mission[i].Anchor = ( AnchorStyles.Right | AnchorStyles.Top );
+                indicators_mission[i].Anchor = (AnchorStyles.Right | AnchorStyles.Top);
                 indicators_mission[i].Visible = bShowGauges;
                 this.splitContainer9.Panel1.Controls.Add(indicators_mission[i]);
                 this.splitContainer9.Panel1.Controls.SetChildIndex(indicators_mission[i], 0);
@@ -946,149 +1052,149 @@ namespace MultiWiiWinGUI
 
             if (!check_capability(CAP.EXTENDED_AUX))
             {
-#region normal_aux_states 
-            aux = new CheckBoxEx[4, 4, iCheckBoxItems];
+                #region normal_aux_states 
+                aux = new CheckBoxEx[4, 4, iCheckBoxItems];
 
-            startx = 200;
-            starty = 60;
+                startx = 200;
+                starty = 60;
 
-            int a, b, c;
-            for (c = 0; c < 4; c++)
-            {
-                for (a = 0; a < 3; a++)
+                int a, b, c;
+                for (c = 0; c < 4; c++)
                 {
-                    for (b = 0; b < iCheckBoxItems; b++)
+                    for (a = 0; a < 3; a++)
                     {
-                        aux[c, a, b] = new CheckBoxEx();
-                        aux[c, a, b].Location = new Point(startx + a * 18 + c * 70, starty + b * 25);
-                        aux[c, a, b].Visible = true;
-                        aux[c, a, b].Text = "";
-                        aux[c, a, b].AutoSize = true;
-                        aux[c, a, b].Size = new Size(16, 16);
-                        aux[c, a, b].UseVisualStyleBackColor = true;
-                        aux[c, a, b].CheckedChanged += new System.EventHandler(this.aux_checked_changed_event);
-                        //Set info on the given checkbox position
-                        aux[c, a, b].aux = c;           //Which aux channel
-                        aux[c, a, b].rclevel = a;       //which rc level
-                        aux[c, a, b].item = b;          //Which item
-                        this.tabPageRC.Controls.Add(aux[c, a, b]);
+                        for (b = 0; b < iCheckBoxItems; b++)
+                        {
+                            aux[c, a, b] = new CheckBoxEx();
+                            aux[c, a, b].Location = new Point(startx + a * 18 + c * 70, starty + b * 25);
+                            aux[c, a, b].Visible = true;
+                            aux[c, a, b].Text = "";
+                            aux[c, a, b].AutoSize = true;
+                            aux[c, a, b].Size = new Size(16, 16);
+                            aux[c, a, b].UseVisualStyleBackColor = true;
+                            aux[c, a, b].CheckedChanged += new System.EventHandler(this.aux_checked_changed_event);
+                            //Set info on the given checkbox position
+                            aux[c, a, b].aux = c;           //Which aux channel
+                            aux[c, a, b].rclevel = a;       //which rc level
+                            aux[c, a, b].item = b;          //Which item
+                            this.tabPageRC.Controls.Add(aux[c, a, b]);
 
+                        }
                     }
                 }
-            }
 
-            aux_labels = new System.Windows.Forms.Label[4];
-            lmh_labels = new System.Windows.Forms.Label[4, 3];          // aux1-4, L,M,H
-            string strlmh = "LMH";
-            for (a = 0; a < 4; a++)
-            {
-                aux_labels[a] = new System.Windows.Forms.Label();
-                aux_labels[a].Text = "AUX" + String.Format("{0:0}", a + 1);
-                aux_labels[a].Location = new Point(startx + a * 70 + 8, starty - 35);
-                aux_labels[a].AutoSize = true;
-                aux_labels[a].ForeColor = Color.White;
-                this.tabPageRC.Controls.Add(aux_labels[a]);
-                for (b = 0; b < 3; b++)
+                aux_labels = new System.Windows.Forms.Label[4];
+                lmh_labels = new System.Windows.Forms.Label[4, 3];          // aux1-4, L,M,H
+                string strlmh = "LMH";
+                for (a = 0; a < 4; a++)
                 {
-                    lmh_labels[a, b] = new System.Windows.Forms.Label();
-                    lmh_labels[a, b].Text = strlmh.Substring(b, 1); ;
-                    lmh_labels[a, b].Location = new Point(startx + a * 70 + b * 18, starty - 20);
-                    lmh_labels[a, b].AutoSize = true;
-                    lmh_labels[a, b].ForeColor = Color.White;
-                    this.tabPageRC.Controls.Add(lmh_labels[a, b]);
+                    aux_labels[a] = new System.Windows.Forms.Label();
+                    aux_labels[a].Text = "AUX" + String.Format("{0:0}", a + 1);
+                    aux_labels[a].Location = new Point(startx + a * 70 + 8, starty - 35);
+                    aux_labels[a].AutoSize = true;
+                    aux_labels[a].ForeColor = Color.White;
+                    this.tabPageRC.Controls.Add(aux_labels[a]);
+                    for (b = 0; b < 3; b++)
+                    {
+                        lmh_labels[a, b] = new System.Windows.Forms.Label();
+                        lmh_labels[a, b].Text = strlmh.Substring(b, 1); ;
+                        lmh_labels[a, b].Location = new Point(startx + a * 70 + b * 18, starty - 20);
+                        lmh_labels[a, b].AutoSize = true;
+                        lmh_labels[a, b].ForeColor = Color.White;
+                        this.tabPageRC.Controls.Add(lmh_labels[a, b]);
+                    }
+
                 }
 
-            }
+                cb_labels = new System.Windows.Forms.Label[20];
 
-            cb_labels = new System.Windows.Forms.Label[20];
-
-            for (z = 0; z < iCheckBoxItems; z++)
-            {
-                cb_labels[z] = new System.Windows.Forms.Label();
-                cb_labels[z].Text = names[z];
-                cb_labels[z].Location = new Point(10, starty + z * 25);
-                cb_labels[z].Visible = true;
-                cb_labels[z].AutoSize = true;
-                cb_labels[z].ForeColor = Color.White;
-                cb_labels[z].TextAlign = ContentAlignment.MiddleRight;
-                this.tabPageRC.Controls.Add(cb_labels[z]);
+                for (z = 0; z < iCheckBoxItems; z++)
+                {
+                    cb_labels[z] = new System.Windows.Forms.Label();
+                    cb_labels[z].Text = names[z];
+                    cb_labels[z].Location = new Point(10, starty + z * 25);
+                    cb_labels[z].Visible = true;
+                    cb_labels[z].AutoSize = true;
+                    cb_labels[z].ForeColor = Color.White;
+                    cb_labels[z].TextAlign = ContentAlignment.MiddleRight;
+                    this.tabPageRC.Controls.Add(cb_labels[z]);
 
 
-            }
-#endregion
+                }
+                #endregion
             } // EXTNEDED AUX CAPABILITY
-            else 
+            else
             {
-#region extended_aux_states
-            aux = new CheckBoxEx[4, 6, iCheckBoxItems];
+                #region extended_aux_states
+                aux = new CheckBoxEx[4, 6, iCheckBoxItems];
 
-            startx = 150;
-            starty = 60;
+                startx = 150;
+                starty = 60;
 
-            int a, b, c;
-            for (c = 0; c < 4; c++)
-            {
-                for (a = 0; a < 6; a++)
+                int a, b, c;
+                for (c = 0; c < 4; c++)
                 {
-                    for (b = 0; b < iCheckBoxItems; b++)
+                    for (a = 0; a < 6; a++)
                     {
-                        aux[c, a, b] = new CheckBoxEx();
-                        aux[c, a, b].Location = new Point(startx + a * 18 + c * 130, starty + b * 25);
-                        aux[c, a, b].Visible = true;
-                        aux[c, a, b].Text = "";
-                        aux[c, a, b].AutoSize = true;
-                        aux[c, a, b].Size = new Size(16, 16);
-                        aux[c, a, b].UseVisualStyleBackColor = true;
-                        aux[c, a, b].CheckedChanged += new System.EventHandler(this.aux_checked_changed_event);
-                        //Set info on the given checkbox position
-                        aux[c, a, b].aux = c;           //Which aux channel
-                        aux[c, a, b].rclevel = a;       //which rc level
-                        aux[c, a, b].item = b;          //Which item
-                        this.tabPageRC.Controls.Add(aux[c, a, b]);
+                        for (b = 0; b < iCheckBoxItems; b++)
+                        {
+                            aux[c, a, b] = new CheckBoxEx();
+                            aux[c, a, b].Location = new Point(startx + a * 18 + c * 130, starty + b * 25);
+                            aux[c, a, b].Visible = true;
+                            aux[c, a, b].Text = "";
+                            aux[c, a, b].AutoSize = true;
+                            aux[c, a, b].Size = new Size(16, 16);
+                            aux[c, a, b].UseVisualStyleBackColor = true;
+                            aux[c, a, b].CheckedChanged += new System.EventHandler(this.aux_checked_changed_event);
+                            //Set info on the given checkbox position
+                            aux[c, a, b].aux = c;           //Which aux channel
+                            aux[c, a, b].rclevel = a;       //which rc level
+                            aux[c, a, b].item = b;          //Which item
+                            this.tabPageRC.Controls.Add(aux[c, a, b]);
 
+                        }
                     }
                 }
-            }
 
-            aux_labels = new System.Windows.Forms.Label[4];
-            lmh_labels = new System.Windows.Forms.Label[4, 6];          // aux1-4, L,M,H
-            string strlmh = "123456";
-            for (a = 0; a < 4; a++)
-            {
-                aux_labels[a] = new System.Windows.Forms.Label();
-                aux_labels[a].Text = "AUX" + String.Format("{0:0}", a + 1);
-                aux_labels[a].Location = new Point(startx + a * 130 + 32, starty - 35);
-                aux_labels[a].AutoSize = true;
-                aux_labels[a].ForeColor = Color.White;
-                this.tabPageRC.Controls.Add(aux_labels[a]);
-                for (b = 0; b < 6; b++)
+                aux_labels = new System.Windows.Forms.Label[4];
+                lmh_labels = new System.Windows.Forms.Label[4, 6];          // aux1-4, L,M,H
+                string strlmh = "123456";
+                for (a = 0; a < 4; a++)
                 {
-                    lmh_labels[a, b] = new System.Windows.Forms.Label();
-                    lmh_labels[a, b].Text = strlmh.Substring(b, 1); ;
-                    lmh_labels[a, b].Location = new Point(startx + a * 130 + b * 18, starty - 20);
-                    lmh_labels[a, b].AutoSize = true;
-                    lmh_labels[a, b].ForeColor = Color.White;
-                    this.tabPageRC.Controls.Add(lmh_labels[a, b]);
+                    aux_labels[a] = new System.Windows.Forms.Label();
+                    aux_labels[a].Text = "AUX" + String.Format("{0:0}", a + 1);
+                    aux_labels[a].Location = new Point(startx + a * 130 + 32, starty - 35);
+                    aux_labels[a].AutoSize = true;
+                    aux_labels[a].ForeColor = Color.White;
+                    this.tabPageRC.Controls.Add(aux_labels[a]);
+                    for (b = 0; b < 6; b++)
+                    {
+                        lmh_labels[a, b] = new System.Windows.Forms.Label();
+                        lmh_labels[a, b].Text = strlmh.Substring(b, 1); ;
+                        lmh_labels[a, b].Location = new Point(startx + a * 130 + b * 18, starty - 20);
+                        lmh_labels[a, b].AutoSize = true;
+                        lmh_labels[a, b].ForeColor = Color.White;
+                        this.tabPageRC.Controls.Add(lmh_labels[a, b]);
+                    }
+
                 }
 
-            }
+                cb_labels = new System.Windows.Forms.Label[20];
 
-            cb_labels = new System.Windows.Forms.Label[20];
-
-            for (z = 0; z < iCheckBoxItems; z++)
-            {
-                cb_labels[z] = new System.Windows.Forms.Label();
-                cb_labels[z].Text = names[z];
-                cb_labels[z].Location = new Point(10, starty + z * 25);
-                cb_labels[z].Visible = true;
-                cb_labels[z].AutoSize = true;
-                cb_labels[z].ForeColor = Color.White;
-                cb_labels[z].TextAlign = ContentAlignment.MiddleRight;
-                this.tabPageRC.Controls.Add(cb_labels[z]);
+                for (z = 0; z < iCheckBoxItems; z++)
+                {
+                    cb_labels[z] = new System.Windows.Forms.Label();
+                    cb_labels[z].Text = names[z];
+                    cb_labels[z].Location = new Point(10, starty + z * 25);
+                    cb_labels[z].Visible = true;
+                    cb_labels[z].AutoSize = true;
+                    cb_labels[z].ForeColor = Color.White;
+                    cb_labels[z].TextAlign = ContentAlignment.MiddleRight;
+                    this.tabPageRC.Controls.Add(cb_labels[z]);
 
 
-            }
-#endregion
+                }
+                #endregion
             }
 
 
@@ -1253,8 +1359,8 @@ namespace MultiWiiWinGUI
 
 
 
-    }
-}
+                }
+            }
             catch
             {
                 bSerialError = true;
@@ -1778,7 +1884,7 @@ namespace MultiWiiWinGUI
                     mw_gui.nav_bank_max = BitConverter.ToUInt16(inBuf, ptr); ptr += 2;
                     mw_gui.rth_altitude = BitConverter.ToUInt16(inBuf, ptr); ptr += 2;
                     mw_gui.land_speed = inBuf[ptr++];
-                    mw_gui.fence        = BitConverter.ToUInt16(inBuf, ptr); ptr += 2;
+                    mw_gui.fence = BitConverter.ToUInt16(inBuf, ptr); ptr += 2;
                     mw_gui.max_wp_number = inBuf[ptr++];
                     break;
 
@@ -1897,7 +2003,7 @@ namespace MultiWiiWinGUI
                                                 {
                                                     //Invalid command received... (CRC was OK btw)
                                                     if (telemetry_started == 1) serial_packet_rx_count++;
-                                                    last_response = cmd;                        
+                                                    last_response = cmd;
 
                                                 }
                                                 else
@@ -1960,21 +2066,29 @@ namespace MultiWiiWinGUI
 
             switch (error_code)
             {
-                case 1: speech.SpeakAsync(sNavError[error_code]);
+                case 1:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 2: speech.SpeakAsync(sNavError[error_code]);
+                case 2:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 3: speech.SpeakAsync(sNavError[error_code]);
+                case 3:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 4: speech.SpeakAsync(sNavError[error_code]);
+                case 4:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 6: speech.SpeakAsync(sNavError[error_code]);
+                case 6:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 7: speech.SpeakAsync(sNavError[error_code]);
+                case 7:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 8: speech.SpeakAsync(sNavError[error_code]);
+                case 8:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
-                case 9: speech.SpeakAsync(sNavError[error_code]);
+                case 9:
+                    speech.SpeakAsync(sNavError[error_code]);
                     break;
             }
         }
@@ -1996,7 +2110,7 @@ namespace MultiWiiWinGUI
 
             barNoise.Value = mw_gui.remnoise;
             labelNoise.Text = Convert.ToString(barNoise.Value);
-            
+
             //VBat on the FC Config panel for helping setup vBatScale
             lVBatConf.Text = String.Format("{0:0.0} volts", (double)mw_gui.vBat / 10);
 
@@ -2217,7 +2331,7 @@ namespace MultiWiiWinGUI
                 gui_settings.save_to_xml(sGuiSettingsFilename);
                 bOptions_needs_refresh = false;
             }
-#endregion
+            #endregion
 
             #region GUIPages.mission
 
@@ -2232,7 +2346,7 @@ namespace MultiWiiWinGUI
             //Hack to force map update
             GMOverlayFlightPath.IsVisibile = false;
             GMOverlayFlightPath.IsVisibile = true;
-            
+
             //Speech nav status notification
             if (gui_settings.speech_enabled)
             {
@@ -2240,19 +2354,26 @@ namespace MultiWiiWinGUI
                 {
                     switch (mw_gui.nav_state)
                     {
-                        case 1: speech.SpeakAsync("Starting return to home.");
+                        case 1:
+                            speech.SpeakAsync("Starting return to home.");
                             break;
-                        case 2: speech.SpeakAsync("Goint to home position.");
+                        case 2:
+                            speech.SpeakAsync("Goint to home position.");
                             break;
-                        case 3: speech.SpeakAsync("Switching to position hold.");
+                        case 3:
+                            speech.SpeakAsync("Switching to position hold.");
                             break;
-                        case 4: speech.SpeakAsync("Timed position hold.");
+                        case 4:
+                            speech.SpeakAsync("Timed position hold.");
                             break;
-                        case 5: speech.SpeakAsync("Going to waypoint " + mw_gui.wp_number.ToString() + ".");
+                        case 5:
+                            speech.SpeakAsync("Going to waypoint " + mw_gui.wp_number.ToString() + ".");
                             break;
-                        case 9: speech.SpeakAsync("Landing is in progress.");
+                        case 9:
+                            speech.SpeakAsync("Landing is in progress.");
                             break;
-                        case 10: speech.SpeakAsync("Copter is landed. Pull throttle to minimum to disarm.");
+                        case 10:
+                            speech.SpeakAsync("Copter is landed. Pull throttle to minimum to disarm.");
                             break;
 
                     }
@@ -2417,16 +2538,16 @@ namespace MultiWiiWinGUI
                     UInt32 check_state;
                     for (int b = 0; b < iCheckBoxItems; b++)
                     {
-                        check_state  = 0 ;
+                        check_state = 0;
                         for (byte a = 0; a < 6; a++)
                         {
                             if (aux[0, a, b].Checked) check_state += (UInt32)(1 << a);
                             if (aux[1, a, b].Checked) check_state += (UInt32)(1 << (6 + a));
-                            if (aux[2, a, b].Checked) check_state += (UInt32)(1 << (12 +a));
+                            if (aux[2, a, b].Checked) check_state += (UInt32)(1 << (12 + a));
                             if (aux[3, a, b].Checked) check_state += (UInt32)(1 << (18 + a));
                         }
                         //Highlight active function name
-                        if ( (check_state & auxState) != 0) { cb_labels[b].BackColor = Color.Red; cb_labels[b].ForeColor = Color.Yellow; } else { cb_labels[b].BackColor = Color.Transparent; cb_labels[b].ForeColor = Color.White; }
+                        if ((check_state & auxState) != 0) { cb_labels[b].BackColor = Color.Red; cb_labels[b].ForeColor = Color.Yellow; } else { cb_labels[b].BackColor = Color.Transparent; cb_labels[b].ForeColor = Color.White; }
                     }
 
                     #endregion 
@@ -2635,12 +2756,12 @@ namespace MultiWiiWinGUI
 
                 response_counter = 0;
 
-                MSPquery_sync(MSP.MSP_PID,200);
-                MSPquery_sync(MSP.MSP_RC_TUNING,200);
-                MSPquery_sync(MSP.MSP_IDENT,200);
-                MSPquery_sync(MSP.MSP_MISC,200);
-                MSPquery_sync(MSP.MSP_SERVO_CONF,200);
-                MSPquery_sync(MSP.MSP_BOX,200);
+                MSPquery_sync(MSP.MSP_PID, 200);
+                MSPquery_sync(MSP.MSP_RC_TUNING, 200);
+                MSPquery_sync(MSP.MSP_IDENT, 200);
+                MSPquery_sync(MSP.MSP_MISC, 200);
+                MSPquery_sync(MSP.MSP_SERVO_CONF, 200);
+                MSPquery_sync(MSP.MSP_BOX, 200);
                 if (naviGroup.Enabled)
                 {
                     MSPquery_sync(MSP.MSP_NAV_CONFIG, 200);
@@ -2775,7 +2896,7 @@ namespace MultiWiiWinGUI
 
             }
 
-        //update nav params.
+            //update nav params.
             int t = (byte)(cbNavGPS_filtering.Checked ? 0x01 : 0x00) +
                  (byte)(cbNavGPS_Lead.Checked ? 0x02 : 0x00) +
                  (byte)(cbNavResetHome.Checked ? 0x04 : 0x00) +
@@ -2787,7 +2908,7 @@ namespace MultiWiiWinGUI
             mw_params.flags1 = (byte)t;
 
             t = (byte)(cbNavDisableSticks.Checked ? 0x01 : 0x00) +
-                (byte)(cbNavBaroTakeover.Checked ? 0x02 : 0x00);  
+                (byte)(cbNavBaroTakeover.Checked ? 0x02 : 0x00);
             mw_params.flags2 = (byte)t;
 
 
@@ -3463,7 +3584,7 @@ namespace MultiWiiWinGUI
             GMapMarkerRect mBorders = new GMapMarkerRect(point);
             {
                 mBorders.InnerMarker = m;
-                mBorders.wprad = (int)mw_gui.wp_radius/100;
+                mBorders.wprad = (int)mw_gui.wp_radius / 100;
                 mBorders.MainMap = MainMap;
                 if (color.HasValue)
                 {
@@ -3568,7 +3689,7 @@ namespace MultiWiiWinGUI
                         try
                         {
                             missionDataGrid.CurrentCell = missionDataGrid[0, answer - 1];
-                            item.ToolTipText = "Altitude: " + missionDataGrid[ALTCOL.Index, answer - 1].Value.ToString()+"m";
+                            item.ToolTipText = "Altitude: " + missionDataGrid[ALTCOL.Index, answer - 1].Value.ToString() + "m";
                             item.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                         }
                         catch { }
@@ -3620,7 +3741,7 @@ namespace MultiWiiWinGUI
                     else
                     {
                         if (Control.ModifierKeys == Keys.Control)
-                            addWP("WAYPOINT", 0,0,0, currentMarker.Position.Lat, currentMarker.Position.Lng, iDefAlt);
+                            addWP("WAYPOINT", 0, 0, 0, currentMarker.Position.Lat, currentMarker.Position.Lng, iDefAlt);
                     }
                 }
                 else
@@ -3654,7 +3775,7 @@ namespace MultiWiiWinGUI
 
         void MainMap_MouseMove(object sender, MouseEventArgs e)
         {
-            
+
 
             PointLatLng point = MainMap.FromLocalToLatLng(e.X, e.Y);
 
@@ -3678,7 +3799,7 @@ namespace MultiWiiWinGUI
                 return;
             }
 
-            
+
             //dragging
             if (e.Button == MouseButtons.Left && isMouseDown && Control.ModifierKeys == Keys.None)
             {
@@ -3817,8 +3938,8 @@ namespace MultiWiiWinGUI
                     {
                         TilePrefetcher obj = new TilePrefetcher();
                         obj.ShowCompleteMessage = false;
-                        obj.Start(area, i, MainMap.MapProvider, 100,0);
-                       
+                        obj.Start(area, i, MainMap.MapProvider, 100, 0);
+
                     }
                     else if (res == DialogResult.No)
                     {
@@ -4238,7 +4359,7 @@ namespace MultiWiiWinGUI
 
                 //LAND here also marks the end of the mission
                 if (sAction == "LAND")
-                    break;                              
+                    break;
 
             }
 
@@ -4525,7 +4646,7 @@ namespace MultiWiiWinGUI
                             {
 
                                 string action = "";
-                                int parameter1,parameter2,parameter3 = 0;
+                                int parameter1, parameter2, parameter3 = 0;
                                 double lat = 0;
                                 double lon = 0;
                                 int alt = 0;
@@ -4541,7 +4662,7 @@ namespace MultiWiiWinGUI
                                 //lat = Convert.ToDouble(reader.GetAttribute("lat"));
                                 //lon = Convert.ToDouble(reader.GetAttribute("lon"));
                                 alt = Convert.ToInt16(reader.GetAttribute("alt"));
-                                addWP(action, parameter1,parameter2, parameter3, lat, lon, alt);
+                                addWP(action, parameter1, parameter2, parameter3, lat, lon, alt);
 
                             }
                             break;
@@ -4608,7 +4729,7 @@ namespace MultiWiiWinGUI
         }
 
         //Temporary implementation to 
-        private void sendWPToMultiWii(SerialPort serialport, int wp_number, byte action, double lat, double lon, int alt, int p1,int p2, int p3, byte flag)  
+        private void sendWPToMultiWii(SerialPort serialport, int wp_number, byte action, double lat, double lon, int alt, int p1, int p2, int p3, byte flag)
         {
             byte[] buffer = new byte[250];          //this must be long enough
             int bptr = 0;                           //buffer pointer
@@ -4907,7 +5028,7 @@ namespace MultiWiiWinGUI
                 lat = 0;
                 lon = 0;
                 flag = 0xa5;
-                sendWPToMultiWii(serialPort, 1, action, lat, lon, altitude, p1,p2,p3, flag);
+                sendWPToMultiWii(serialPort, 1, action, lat, lon, altitude, p1, p2, p3, flag);
                 qStatus = Query_WP(Convert.ToByte(1));
 
                 if (qStatus == WP_Query.Timeout)
@@ -4957,7 +5078,7 @@ namespace MultiWiiWinGUI
                 flag = 0;
                 if (a == (missionDataGrid.Rows.Count - 1)) flag = 0xa5;
 
-                sendWPToMultiWii(serialPort, a + 1, action, lat, lon, altitude, p1,p2,p3, flag);
+                sendWPToMultiWii(serialPort, a + 1, action, lat, lon, altitude, p1, p2, p3, flag);
 
                 qStatus = Query_WP(Convert.ToByte(a + 1));
 
@@ -5011,26 +5132,34 @@ namespace MultiWiiWinGUI
 
                     switch (mission_step.action)
                     {
-                        case WP_ACTION.WAYPOINT: strAction = "WAYPOINT";
+                        case WP_ACTION.WAYPOINT:
+                            strAction = "WAYPOINT";
                             break;
-                        case WP_ACTION.HOLD_UNLIM: strAction = "POSHOLD_UNLIM";
+                        case WP_ACTION.HOLD_UNLIM:
+                            strAction = "POSHOLD_UNLIM";
                             break;
-                        case WP_ACTION.HOLD_TIME: strAction = "POSHOLD_TIME";
+                        case WP_ACTION.HOLD_TIME:
+                            strAction = "POSHOLD_TIME";
                             break;
-                        case WP_ACTION.RTH: strAction = "RTH";
+                        case WP_ACTION.RTH:
+                            strAction = "RTH";
                             break;
-                        case WP_ACTION.JUMP: strAction = "JUMP";
+                        case WP_ACTION.JUMP:
+                            strAction = "JUMP";
                             break;
-                        case WP_ACTION.SET_POI: strAction = "SET_POI";
+                        case WP_ACTION.SET_POI:
+                            strAction = "SET_POI";
                             break;
-                        case WP_ACTION.SET_HEAD: strAction = "SET_HEAD";
+                        case WP_ACTION.SET_HEAD:
+                            strAction = "SET_HEAD";
                             break;
-                        case WP_ACTION.LAND: strAction = "LAND";
+                        case WP_ACTION.LAND:
+                            strAction = "LAND";
                             break;
-                            
+
                     }
 
-                    addWP(strAction, mission_step.p1,mission_step.p2,mission_step.p3, (double)mission_step.lat / 10000000.0, (double)mission_step.lon / 10000000.0, mission_step.altitude / 100);
+                    addWP(strAction, mission_step.p1, mission_step.p2, mission_step.p3, (double)mission_step.lat / 10000000.0, (double)mission_step.lon / 10000000.0, mission_step.altitude / 100);
                     //Clear update flag
                     mission_step.wp_updated = false;
                     i++;
@@ -5079,8 +5208,8 @@ namespace MultiWiiWinGUI
                 altitude_meter2.Visible = false;
                 barRSSIMission.Visible = false;
                 battery_indicator2.Visible = false;
-                if (indicators_mission != null) 
-                   for (int i = 0; i < iCheckBoxItems; i++) indicators_mission[i].Visible = false;
+                if (indicators_mission != null)
+                    for (int i = 0; i < iCheckBoxItems; i++) indicators_mission[i].Visible = false;
             }
             else
             {
@@ -5092,7 +5221,7 @@ namespace MultiWiiWinGUI
                 barRSSIMission.Visible = true;
                 battery_indicator2.Visible = true;
                 if (indicators_mission != null)
-                   for (int i = 0; i < iCheckBoxItems; i++) indicators_mission[i].Visible = true;
+                    for (int i = 0; i < iCheckBoxItems; i++) indicators_mission[i].Visible = true;
 
             }
 
@@ -5102,76 +5231,9 @@ namespace MultiWiiWinGUI
         [STAThread]
         private void tsMenuAddWP_Click(object sender, EventArgs e)
         {
-            string stringbyte = null;
-            IPAddress serverIP = IPAddress.Parse("203.252.53.54");
-            IPEndPoint serverEndPoint = new IPEndPoint(serverIP, 5555);
-
-            try
-            {
-                Server = new Socket(
-                  AddressFamily.InterNetwork,
-                  SocketType.Stream, ProtocolType.Tcp);
-
-                Server.Bind(serverEndPoint);
-                Server.Listen(10);
-
-                Client = Server.Accept();
-
-                if (Client.Connected)
-                {
-                    while (true)
-                    {
-                        Client.Receive(getByte, 0, getByte.Length, SocketFlags.None);
-                        stringbyte = Encoding.UTF7.GetString(getByte);
-
-                        if (stringbyte != String.Empty)
-                        {
-                            int getValueLength = 0;
-                            getValueLength = byteArrayDefrag(getByte);
-
-                            stringbyte = Encoding.UTF7.GetString(
-                              getByte, 0, getValueLength + 1);
-
-                            string[] strlist = stringbyte.Split('\x020');
-
-                            user_gps.Lat = Convert.ToDouble(strlist[0]);
-                            user_gps.Lng = Convert.ToDouble(strlist[1]);
-
-                            setByte = Encoding.UTF7.GetBytes(stringbyte);
-                            Client.Send(setByte, 0, setByte.Length, SocketFlags.None);
-                        }
-
-                        getByte = new byte[1024];
-                        setByte = new byte[1024];
-                    }
-                }
-            }
-            catch (System.Net.Sockets.SocketException socketEx){ }
-            catch (System.Exception commonEx){ }
-            finally
-            {
-                Server.Close();
-                Client.Close();
-            }
-
             addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
-
         }
 
-        public static int byteArrayDefrag(byte[] sData)
-        {
-            int endLength = 0;
-
-            for (int i = 0; i < sData.Length; i++)
-            {
-                if ((byte)sData[i] != (byte)0)
-                {
-                    endLength = i;
-                }
-            }
-
-            return endLength;
-        }
 
         private void tsMenuAddPosholdTimed_Click(object sender, EventArgs e)
         {
@@ -5280,7 +5342,7 @@ namespace MultiWiiWinGUI
                 return;
             }
 
-            if (!int.TryParse(Pointsin, out Points) || Points < 5 || Points >30 )
+            if (!int.TryParse(Pointsin, out Points) || Points < 5 || Points > 30)
             {
                 MessageBox.Show("Invalid Number of points");
                 return;
@@ -5336,8 +5398,8 @@ namespace MultiWiiWinGUI
 
             foreach (DataGridViewRow line in missionDataGrid.Rows)
             {
-                if ( (string)line.Cells[Action.Index].Value == "WAYPOINT" || (string)line.Cells[Action.Index].Value == "POSHOLD_TIME" || (string)line.Cells[Action.Index].Value == "POSHOLD_UNLIM")
-                   line.Cells[ALTCOL.Index].Value = (int)(float.Parse(line.Cells[ALTCOL.Index].Value.ToString()) + altchange);
+                if ((string)line.Cells[Action.Index].Value == "WAYPOINT" || (string)line.Cells[Action.Index].Value == "POSHOLD_TIME" || (string)line.Cells[Action.Index].Value == "POSHOLD_UNLIM")
+                    line.Cells[ALTCOL.Index].Value = (int)(float.Parse(line.Cells[ALTCOL.Index].Value.ToString()) + altchange);
             }
 
         }
@@ -5345,23 +5407,23 @@ namespace MultiWiiWinGUI
         private void tsMenuDeleteWP_Click(object sender, EventArgs e)
         {
 
-         int no = 0;
-         if (CurentRectMarker != null)
-         {
-             if (int.TryParse(CurentRectMarker.InnerMarker.Tag.ToString(), out no))
-             {
-                 try
-                 {
-                     missionDataGrid.Rows.RemoveAt(no - 1); // home is 0
-                     updateMap();
-                     updateIndex();
-                 }
-                 catch { MessageBox.Show("error selecting wp, please try again."); }
-             }
-         }
+            int no = 0;
+            if (CurentRectMarker != null)
+            {
+                if (int.TryParse(CurentRectMarker.InnerMarker.Tag.ToString(), out no))
+                {
+                    try
+                    {
+                        missionDataGrid.Rows.RemoveAt(no - 1); // home is 0
+                        updateMap();
+                        updateIndex();
+                    }
+                    catch { MessageBox.Show("error selecting wp, please try again."); }
+                }
+            }
 
-         if (currentMarker != null)
-             CurentRectMarker = null;
+            if (currentMarker != null)
+                CurentRectMarker = null;
 
 
         }
@@ -5406,11 +5468,11 @@ namespace MultiWiiWinGUI
         private void timer_announce_Tick(object sender, EventArgs e)
         {
             //Announce is active only when copter is armed
-            if (isArmed() && speech !=null && isConnected)
+            if (isArmed() && speech != null && isConnected)
             {
-                   if (gui_settings.announce_alt_enabled) speech.SpeakAsync("Altitude " + Convert.ToString(mw_gui.EstAlt / 100) + " meters.");
-                   if (gui_settings.announce_vbat_enabled) speech.SpeakAsync("Battery " + Convert.ToString(((double)mw_gui.vBat) / 10) + "volts");
-                   if (gui_settings.announce_dist_enabled) speech.SpeakAsync("Distance " + Convert.ToString(mw_gui.GPS_distanceToHome) + "meters.");
+                if (gui_settings.announce_alt_enabled) speech.SpeakAsync("Altitude " + Convert.ToString(mw_gui.EstAlt / 100) + " meters.");
+                if (gui_settings.announce_vbat_enabled) speech.SpeakAsync("Battery " + Convert.ToString(((double)mw_gui.vBat) / 10) + "volts");
+                if (gui_settings.announce_dist_enabled) speech.SpeakAsync("Distance " + Convert.ToString(mw_gui.GPS_distanceToHome) + "meters.");
             }
         }
 
@@ -5438,28 +5500,34 @@ namespace MultiWiiWinGUI
 
             gui_settings.announce_interval = comboSpeakInterval.SelectedIndex;
             b_save_gui_settings.BackColor = Color.LightCoral;
-            switch(comboSpeakInterval.SelectedIndex)
+            switch (comboSpeakInterval.SelectedIndex)
             {
-                case 0: timer_announce.Interval = 10000;
+                case 0:
+                    timer_announce.Interval = 10000;
                     break;
-                case 1: timer_announce.Interval = 15000;
+                case 1:
+                    timer_announce.Interval = 15000;
                     break;
-                case 2: timer_announce.Interval = 30000;
+                case 2:
+                    timer_announce.Interval = 30000;
                     break;
-                case 3: timer_announce.Interval = 60000;
+                case 3:
+                    timer_announce.Interval = 60000;
                     break;
-                case 4: timer_announce.Interval = 90000;
+                case 4:
+                    timer_announce.Interval = 90000;
                     break;
-                default: timer_announce.Interval = 60000;
+                default:
+                    timer_announce.Interval = 60000;
                     break;
             }
-            
+
         }
 
- 
 
 
- 
+
+
     }
 
 }
