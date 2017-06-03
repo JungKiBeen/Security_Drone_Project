@@ -38,8 +38,7 @@ public class MainActivity extends Activity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -59,38 +58,32 @@ public class MainActivity extends Activity {
 
         tv = (TextView) findViewById(R.id.textView2);
         tv.setText("");
-        edittext = (EditText)findViewById(R.id.edittext);
-        tb = (ToggleButton)findViewById(R.id.toggle1);
-        b = (Button)findViewById(R.id.btn1);
+        edittext = (EditText) findViewById(R.id.edittext);
+        tb = (ToggleButton) findViewById(R.id.toggle1);
+        b = (Button) findViewById(R.id.btn1);
 
         // LocationManager 객체를 얻어온다
         final LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        b.setOnClickListener(new Button.OnClickListener()
-        {
-            @Override public void onClick(View view)
-            {
+        b.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 ipad = edittext.getText().toString();
 
-                Thread worker = new Thread()
-                {
-                    public void run()
-                    {
+                Thread worker1 = new Thread() {
+                    public void run() {
                         try {
                             socket = new Socket(ipad, 5555);        // 정기빈: 서버  측 아이피 주소
                             socket_out = new PrintWriter(socket.getOutputStream(), true);
 
                             socket_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                        } catch (IOException e)
-                        {
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
 
-                        try
-                        {
-                            while (true)
-                            {
+                        try {
+                            while (true) {
                                 data = socket_in.readLine();
                                 output.post(new Runnable() {
                                     public void run() {
@@ -102,22 +95,19 @@ public class MainActivity extends Activity {
                         }
                     }
                 };
-                worker.start();
+                worker1.start();
 
             }
 
-        }) ;
+        });
 
 
-        tb.setOnClickListener(new View.OnClickListener()
-        {
+        tb.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v)
-            {
-                try{
-                    if(tb.isChecked())
-                    {
+            public void onClick(View v) {
+                try {
+                    if (tb.isChecked()) {
 
 
                         tv.setText("Connected..");
@@ -125,23 +115,21 @@ public class MainActivity extends Activity {
                         // 정기빈 : 로케이션 매니져 객체에 GPS 위치제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         // GPS 제공자의 정보가 바뀌면 콜백하도록 리스너 등록하기~!!!
                         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, // 등록할 위치제공자
-                                1, // 통지사이의 최소 시간간격 (miliSecond)
+                                1000, // 통지사이의 최소 시간간격 (miliSecond)
                                 1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                         // 정기빈 : 로케이션 매니져 객체에 NETWORK 위치 제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자
-                                1, // 통지사이의 최소 시간간격 (miliSecond)
+                                1000, // 통지사이의 최소 시간간격 (miliSecond)
                                 1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
-
                     }
 
                     else
                     {
                         tv.setText("Disconnected..");
                         lm.removeUpdates(mLocationListener);  //  미수신할때는 반드시 자원해체를 해주어야 한다.
-
 
                     }
                 }
@@ -178,9 +166,7 @@ public class MainActivity extends Activity {
             Log.d("test", "onLocationChanged, location:" + location);
             double longitude = location.getLongitude(); //경도
             double latitude = location.getLatitude();   //위도
-            double altitude = location.getAltitude();   //고도
-            float accuracy = location.getAccuracy();    //정확도
-            String provider = location.getProvider();   //위치제공자
+
             //Gps 위치제공자에 의한 위치변화. 오차범위가 좁다.
             //Network 위치제공자에 의한 위치변화
             //Network 위치는 Gps에 비해 정확도가 많이 떨어진다.

@@ -5,8 +5,11 @@
     // 정기빈 : 인터넷 펄미션
     <uses-permission android:name="android.permission.INTERNET" />
     // 정기빈 : GPS, 네트워크 펄미션
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 
     <application
@@ -23,6 +26,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
     </application>
+
 
 </manifest>
