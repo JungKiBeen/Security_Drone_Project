@@ -46,12 +46,13 @@ namespace MultiWiiWinGUI
 
     public partial class mainGUI : Form
     {
-        public static string ipad = "192.168.25.25";
-
         #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
-        public static Socket Server, Client;
+        public static string ipad = "203.252.53.137";
         public const int sPort = 5555;
+
+        public static Socket Server, Client;
+     
         public PointLatLng user_gps;
         public static byte[] getByte = new byte[1024];
         public static byte[] setByte = new byte[1024];
@@ -62,7 +63,7 @@ namespace MultiWiiWinGUI
 
         #region Common variables (properties)
 
-
+             
         const string sVersion = "2.4";
         byte byteVersion = 230;
         uint iNaviVersion = 7;                //Navigation code version
@@ -305,65 +306,69 @@ namespace MultiWiiWinGUI
                 Client = Server.Accept();
 
                 NetworkStream ns = new NetworkStream(Client);
-
                 StreamReader sr = new StreamReader(ns);
 
+                user_gps = new PointLatLng(0.0, 0.0);
                 double Lat = 0.0, Lng = 0.0;
                 if (Client.Connected)
                 {
                     while (true)
                     {
-                        string data = sr.ReadLine();
-
-                        string[] strlist = data.Split('\x020');
-
-                        if (!Double.TryParse(strlist[0], out Lat))
+                        try
                         {
-                            continue;
-                        }
+                            string data = sr.ReadLine();
 
-                        if (!Double.TryParse(strlist[1], out Lng))
-                        {
-                            continue;
-                        }
-                        
-                        Array.Clear(strlist, 0, strlist.Length);
+                            string[] strlist = data.Split('\x020');
 
-                        if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
-                        {
-                            user_gps.Lat = Lat;
-                            user_gps.Lng = Lng;
-                            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+                            if (!double.TryParse(strlist[0].Replace("\n", ""), out Lat))
+                            {
+                                continue;
+                            }
 
+                            if (!double.TryParse(strlist[1].Replace("\n", ""), out Lng))
+                            {
+                                continue;
+                            }
+
+                            Array.Clear(strlist, 0, strlist.Length);
+
+                            if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
+                            {
+                                if (missionDataGrid.Rows.Count <= 6)
+                                {
+                                    user_gps.Lat = Lat;
+                                    user_gps.Lng = Lng;
+                                    addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+                                }
+
+                                else
+                                {
+                                    missionDataGrid.Rows.Clear();
+                                    updateMap();
+                                    //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    //return;
+                                }
+                            }
                         }
+                        catch (FormatException fe) { continue; }
                     }
                 }
             }
-            catch (SocketException socketEx) { }
-            catch (Exception commonEx) { }
+            catch (SocketException socketEx)
+            {
+
+            }
+            catch (Exception commonEx)
+            {
+                
+            }
             finally
             {
                 Server.Close();
                 Client.Close();
-                new Thread(new ThreadStart(socket_communication)).Start();
             }
-
         }
 
-        public static int byteArrayDefrag(byte[] sData)
-        {
-            int endLength = 0;
-
-            for (int i = 0; i < sData.Length; i++)
-            {
-                if ((byte)sData[i] != (byte)0)
-                {
-                    endLength = i;
-                }
-            }
-
-            return endLength;
-        }
 
         // 정기빈 : 추가함수
 
@@ -452,7 +457,6 @@ namespace MultiWiiWinGUI
 
         private void mainGUI_Load(object sender, EventArgs e)
         {
-            user_gps = new PointLatLng(0.0, 0.0);
             /* 정기빈 : 비동기 소켓 추가*/
             new Thread(new ThreadStart(socket_communication)).Start();
 
@@ -4240,20 +4244,21 @@ namespace MultiWiiWinGUI
 
         private void addWP(string action, int P1, int P2, int P3, double Lat, double Lon, int Alt)
         {
-            
-            //waypoint 수가 허용 치를 넘을 때 호출
-            if (missionDataGrid.Rows.Count >= 15)
-            {
-                missionDataGrid.Rows.Clear();
-                updateMap();
-                return;
-                //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //return;
-            }
 
 
             try
             {
+                /*
+                //waypoint 수가 허용 치를 넘을 때 호출
+                if (missionDataGrid.Rows.Count >= 10)
+                {
+                    missionDataGrid.Rows.Clear();
+                    updateMap();
+                    return;
+                    //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //return;
+                }
+                */
                 selectedrow = missionDataGrid.Rows.Add();
 
                 missionDataGrid.Rows[selectedrow].Cells[No.Index].Value = selectedrow + 1;
@@ -4261,15 +4266,18 @@ namespace MultiWiiWinGUI
                 missionDataGrid.Rows[selectedrow].Cells[Par1.Index].Value = P1;
                 missionDataGrid.Rows[selectedrow].Cells[Par2.Index].Value = P2;
                 missionDataGrid.Rows[selectedrow].Cells[Par3.Index].Value = P3;
-                missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = Lat.ToString("0.000000000000000");
-                missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = Lon.ToString("0.000000000000000");
+                missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = Lat.ToString("0.0000000");
+                missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = Lon.ToString("0.0000000");
                 missionDataGrid.Rows[selectedrow].Cells[ALTCOL.Index].Value = Alt;
 
                 missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
             }
-            catch (Exception e) { }
-
-            updateMap();
+            catch (FormatException fe)
+            {
+                return;
+            }
+           
+           updateMap();
 
         }
 
@@ -4686,7 +4694,6 @@ namespace MultiWiiWinGUI
                                 parameter1 = Convert.ToInt16(reader.GetAttribute("parameter1"));
                                 parameter2 = Convert.ToInt16(reader.GetAttribute("parameter2"));
                                 parameter3 = Convert.ToInt16(reader.GetAttribute("parameter3"));
-
                                 double.TryParse(reader.GetAttribute("lat").Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out lat);
                                 double.TryParse(reader.GetAttribute("lon").Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out lon);
                                 //lat = Convert.ToDouble(reader.GetAttribute("lat"));
@@ -5265,7 +5272,7 @@ namespace MultiWiiWinGUI
 
         private void tsMenuAddWP_Click(object sender, EventArgs e)
         {
-            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+            addWP("WAYPOINT", 0, 0, 0, start.Lat, start.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
         }
 
 

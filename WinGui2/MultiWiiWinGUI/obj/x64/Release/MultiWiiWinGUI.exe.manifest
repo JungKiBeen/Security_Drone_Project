@@ -4,7 +4,7 @@
   <description asmv2:iconFile="mwwingui.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6348.17978" language="neutral" processorArchitecture="amd64" />
+    <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6365.42846" language="neutral" processorArchitecture="amd64" />
     <commandLine file="MultiWiiWinGUI.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -151,14 +151,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MultiWiiWinGUI.exe" size="7682048">
-      <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6348.17978" language="neutral" processorArchitecture="amd64" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MultiWiiWinGUI.exe" size="7683584">
+      <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6365.42846" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>YU25NJ6VSzwtnyLZZNAmXE0SH5M=</dsig:DigestValue>
+        <dsig:DigestValue>ani0NGMyQG3+DWgLb3HyYTs1Erc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
