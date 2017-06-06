@@ -1,7 +1,6 @@
 ﻿/*
  * MultiWii Windows GUI by Andras Schaffer (EOSBandi)
  * February  2014     V2.3 Beta
-
  * 
  * LogBrowser is based on ArduPlanner Mega code written by Michael Oborne http://www.diydrones.com 
  * Instrument controls are based on AvionicsInstrument Controls written by Guillaume CHOUTEAU http://www.codeproject.com/Articles/27411/C-Avionic-Instrument-Controls
@@ -48,11 +47,11 @@ namespace MultiWiiWinGUI
     {
         #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
-        public static string ipad = "203.252.53.137";
+        public static string ipad = "203.252.53.182";
         public const int sPort = 5555;
 
         public static Socket Server, Client;
-     
+
         public PointLatLng user_gps;
         public static byte[] getByte = new byte[1024];
         public static byte[] setByte = new byte[1024];
@@ -63,7 +62,7 @@ namespace MultiWiiWinGUI
 
         #region Common variables (properties)
 
-             
+
         const string sVersion = "2.4";
         byte byteVersion = 230;
         uint iNaviVersion = 7;                //Navigation code version
@@ -360,7 +359,7 @@ namespace MultiWiiWinGUI
             }
             catch (Exception commonEx)
             {
-                
+
             }
             finally
             {
@@ -1337,7 +1336,6 @@ namespace MultiWiiWinGUI
                     }
 
                     /*
-
                                         if (isBoxActive("GPS HOLD"))
                                         {                                                            //poshold
                                             MSPqueryWP(255);         //get hold position
@@ -2397,7 +2395,7 @@ namespace MultiWiiWinGUI
                 catch (Exception e) { }
 
 
-               
+
 
                 //Error notification (perhaps could move to common section
                 if (gui_settings.speech_enabled)
@@ -4224,7 +4222,7 @@ namespace MultiWiiWinGUI
 
             }
             catch (Exception wwqee) { }
-         
+
             updateMap();
             updateIndex();
 
@@ -4276,8 +4274,8 @@ namespace MultiWiiWinGUI
             {
                 return;
             }
-           
-           updateMap();
+
+            updateMap();
 
         }
 
@@ -4296,7 +4294,7 @@ namespace MultiWiiWinGUI
                 missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
             }
             catch (Exception e) { }
-           
+
 
         }
 
@@ -4322,7 +4320,7 @@ namespace MultiWiiWinGUI
             }
             catch (Exception e) { }
         }
-            
+
 
         private void updateMap()
         {
@@ -4472,7 +4470,7 @@ namespace MultiWiiWinGUI
 
             }
             catch (Exception e) { }
-            
+
 
 
         }
@@ -4635,25 +4633,25 @@ namespace MultiWiiWinGUI
 
             try
             {
-                 for (int i = 0; i < missionDataGrid.Rows.Count; i++)
-            {
-                tw.WriteStartElement("MISSIONITEM no=\"" + (i + 1) + "\" " +
-                                     "action=\"" + missionDataGrid.Rows[i].Cells[Action.Index].Value + "\" " +
-                                     "parameter1=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par1.Index].Value) + "\" " +
-                                     "parameter2=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par2.Index].Value) + "\" " +
-                                     "parameter3=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par3.Index].Value) + "\" " +
-                                     "lat=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LATCOL.Index].Value) + "\" " +
-                                     "lon=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LONCOL.Index].Value) + "\" " +
-                                     "alt=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[ALTCOL.Index].Value) + "\"");
+                for (int i = 0; i < missionDataGrid.Rows.Count; i++)
+                {
+                    tw.WriteStartElement("MISSIONITEM no=\"" + (i + 1) + "\" " +
+                                         "action=\"" + missionDataGrid.Rows[i].Cells[Action.Index].Value + "\" " +
+                                         "parameter1=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par1.Index].Value) + "\" " +
+                                         "parameter2=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par2.Index].Value) + "\" " +
+                                         "parameter3=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par3.Index].Value) + "\" " +
+                                         "lat=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LATCOL.Index].Value) + "\" " +
+                                         "lon=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LONCOL.Index].Value) + "\" " +
+                                         "alt=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[ALTCOL.Index].Value) + "\"");
+                    tw.WriteEndElement();
+                }
                 tw.WriteEndElement();
-            }
-            tw.WriteEndElement();
-            tw.WriteEndDocument();
-            tw.Close();
+                tw.WriteEndDocument();
+                tw.Close();
             }
             catch (Exception e) { }
 
-           
+
         }
 
         private bool loadMission(string filename)
@@ -5150,7 +5148,7 @@ namespace MultiWiiWinGUI
                 }
             }
             catch (Exception wrea) { }
-            
+
         }
 
 

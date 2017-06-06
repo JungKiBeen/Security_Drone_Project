@@ -1,0 +1,133 @@
+/* ./파일명 <wingui ip주소> <소켓 번호> */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <time.h>
+#include <netinet/in.h>
+
+//소켓 프로그래밍에 사용될 헤더파일 선언
+
+#define BUF_LEN 1024
+//메시지 송수신에 사용될 버퍼 크기를 선언
+
+int main(int argc, char *argv[])
+{
+	char buffer[BUF_LEN];
+	struct sockaddr_in server_addr, client_addr;
+	char temp[20];
+	int server_fd, client_fd;
+	//server_fd, client_fd : 각 소켓 번호
+
+
+	struct sockaddr_in wingui_addr;
+	//struct sockaddr_in server_addr : 서버(wingui)의 소켓주소 구조체
+	char *waddr;	// wingui ip 주소
+	int wingui;
+
+	int len, msg_size;
+
+	if (argc != 3)
+	{
+		printf("usage : %s [Wingui ip] [port]\n", argv[0]);
+		exit(0);
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	waddr = argv[1];
+
+	/* wingui) 소켓 호출 */
+	if ((wingui = socket(PF_INET, SOCK_STREAM, 0)) < 0)
+	{
+		//소켓 생성과 동시에 소켓 생성 유효검사
+		printf("ARTIK : Can't open stream socket\n");
+		exit(0);
+	}
+
+	bzero((char *)&wingui_addr, sizeof(wingui_addr));
+	//서버의 소켓주소 구조체 server_addr을 NULL로 초기화
+
+
+	wingui_addr.sin_family = AF_INET;
+	//주소 체계를 AF_INET 로 선택
+	wingui_addr.sin_addr.s_addr = inet_addr(argv[1]);
+	wingui_addr.sin_port = htons(atoi(argv[2]));
+
+	if (connect(wingui, (struct sockaddr *)&wingui_addr, sizeof(wingui_addr)) < 0)
+	{//서버로 연결요청
+		printf("ARTIK: can't connect to Wingui.\n");
+		exit(0);
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	{// 소켓 생성
+		printf("ARTIK : Can't open stream socket\n");
+		exit(0);
+	}
+
+	memset(&server_addr, 0x00, sizeof(server_addr));
+	//server_Addr 을 NULL로 초기화
+
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	server_addr.sin_port = htons(atoi(argv[2]));
+	//server_addr 셋팅
+
+	/* 클라이언트 소켓 바인드*/
+	if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) <0)
+	{//bind() 호출
+		printf("ARTIK : Can't bind local address.\n");
+		exit(0);
+	}
+
+
+	while (1)
+	{
+
+		if (listen(server_fd, 5) < 0)
+		{
+			//소켓을 수동 대기모드로 설정
+			printf("ARTIK : Can't listening connect.\n");
+			exit(0);
+		}
+
+		memset(buffer, 0x00, sizeof(buffer));
+		printf("ARTIK : wating connection request\n");
+		len = sizeof(client_addr);
+
+		client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &len);
+		if (client_fd < 0)
+		{
+			printf("ARTIK : accept failed.\n");
+			exit(0);
+		}
+		inet_ntop(AF_INET, &client_addr.sin_addr.s_addr, temp, sizeof(temp));
+
+
+		printf("ARTIK : [%s]Client connected !!\n", temp);
+
+		// read가 0을 반환 할 경우 클라이언트 접속이 종료된 것!
+		while (msg_size = read(client_fd, buffer, 1024) != 0)
+		{
+			printf("ARTIK : [%s]%s\n", temp, buffer);
+			write(wingui, buffer, strlen(buffer));
+
+		}
+
+		close(client_fd);
+		
+		printf("ARTIK : [%s]Client closed !!\n", temp);
+
+	}
+	close(wingui);
+	close(server_fd);
+	return 0;
+}
