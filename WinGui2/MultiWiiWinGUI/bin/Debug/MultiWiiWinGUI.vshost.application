@@ -4,6 +4,7 @@
   <description asmv2:publisher="Microsoft Corporation" asmv2:product="MultiWiiWinGUI" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <deployment install="true" mapFileExtensions="true" />
   <compatibleFrameworks xmlns="urn:schemas-microsoft-com:clickonce.v2">
+    <framework targetVersion="4.0" profile="Client" supportedRuntime="4.0.30319" />
     <framework targetVersion="4.0" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
@@ -14,7 +15,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>2GT1D6oJ5IM5cWBv36Lcodm/JWo=</dsig:DigestValue>
+        <dsig:DigestValue>VtDQI44aiT+GrZGnRhQ6FD9Tszs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

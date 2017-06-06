@@ -4,7 +4,7 @@
   <description asmv2:iconFile="mwwingui.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6366.29701" language="neutral" processorArchitecture="x86" />
+    <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6366.38752" language="neutral" processorArchitecture="x86" />
     <commandLine file="MultiWiiWinGUI.exe" parameters="" />
   </entryPoint>
   <trustInfo>
@@ -152,13 +152,13 @@
   </dependency>
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MultiWiiWinGUI.exe" size="7684608">
-      <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6366.29701" language="neutral" processorArchitecture="x86" />
+      <assemblyIdentity name="MultiWiiWinGUI" version="2.3.6366.38752" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>vCnxMBCYL2zrREUw20UFf/DQ/nM=</dsig:DigestValue>
+        <dsig:DigestValue>g8wEhOJCGRDSvgeQ61hO6jAJu44=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

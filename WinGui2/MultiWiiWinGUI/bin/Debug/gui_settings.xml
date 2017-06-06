@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
-<!--MultiWiiWinGUI, Version 2.3.6365.42562-->
+<!--MultiWiiWinGUI, Version 2.3.6366.39589-->
 <!--GUI Settings-->
 <!--Do not change this file manually, unless you know what are you doing-->
 <PARAMETERS>
     <FCVERSION value="23" />
-    <LOGFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Logs" />
-    <CAPTUREFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Captures" />
-    <SETTINGSFOLDER value="C:\Users\Administrator\Desktop\source-archive\mw-wingui\trunk\WinGui2\MultiWiiWinGUI\bin\Debug\Settings" />
+    <LOGFOLDER value="C:\Users\Administrator\Downloads\mw-wingui-master\WinGui2\MultiWiiWinGUI\bin\Debug\Logs" />
+    <CAPTUREFOLDER value="C:\Users\Administrator\Downloads\mw-wingui-master\WinGui2\MultiWiiWinGUI\bin\Debug\Captures" />
+    <SETTINGSFOLDER value="C:\Users\Administrator\Downloads\mw-wingui-master\WinGui2\MultiWiiWinGUI\bin\Debug\Settings" />
     <LOGATCONNECT value="False" />
     <SERIALPORT value="" />
     <SERIALSPEED value="115200" />
     <LOGRAW value="False" />
-    <LOGATT value="False" />
-    <LOGMAG value="False" />
-    <LOGRCC value="False" />
+    <LOGATT value="True" />
+    <LOGMAG value="True" />
+    <LOGRCC value="True" />
     <LOGRCX value="False" />
-    <LOGMOT value="False" />
-    <LOGSRV value="False" />
-    <LOGNAV value="False" />
-    <LOGPAR value="False" />
+    <LOGMOT value="True" />
+    <LOGSRV value="True" />
+    <LOGNAV value="True" />
+    <LOGPAR value="True" />
     <LOGDBG value="False" />
-    <MAPPROVIDER value="0" />
+    <MAPPROVIDER value="1" />
     <SPEECH_ENABLED value="True" />
     <ANNOUNCE_ALT value="False" />
     <ANNOUNCE_VBAT value="False" />

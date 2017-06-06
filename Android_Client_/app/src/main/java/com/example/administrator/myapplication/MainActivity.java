@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -24,7 +23,6 @@ public class MainActivity extends Activity {
     TextView tv;
     ToggleButton tb;
     EditText edittext;
-    Button b;
 
     private Socket socket;
     BufferedReader socket_in;
@@ -60,46 +58,10 @@ public class MainActivity extends Activity {
         tv.setText("");
         edittext = (EditText)findViewById(R.id.edittext);
         tb = (ToggleButton)findViewById(R.id.toggle1);
-        b = (Button)findViewById(R.id.btn1);
 
         // LocationManager 객체를 얻어온다
         final LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        b.setOnClickListener(new Button.OnClickListener()
-        {
-            @Override public void onClick(View view)
-            {
-                ipad = edittext.getText().toString();
-
-                Thread worker = new Thread()
-                {
-                    public void run()
-                    {
-                        try {
-                            socket = new Socket(ipad, 5555);        // 정기빈: 서버  측 아이피 주소
-                            socket_out = new PrintWriter(socket.getOutputStream(), true);
-
-
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                        try
-                        {
-                            while (true)
-                            {
-
-                            }
-                        } catch (Exception e) {
-                        }
-                    }
-                };
-                worker.start();
-
-            }
-
-        }) ;
 
 
         tb.setOnClickListener(new View.OnClickListener()
@@ -111,21 +73,47 @@ public class MainActivity extends Activity {
                 try{
                     if(tb.isChecked())
                     {
+                        ipad = edittext.getText().toString();
 
+                        Thread worker = new Thread()
+                        {
+                            public void run()
+                            {
+                                try {
+                                    socket = new Socket(ipad, 5555);        // 정기빈: 서버  측 아이피 주소
+                                    socket_out = new PrintWriter(socket.getOutputStream(), true);
+
+
+                                } catch (IOException e)
+                                {
+                                    e.printStackTrace();
+                                }
+
+                                try
+                                {
+                                    while (true)
+                                    {
+
+                                    }
+                                } catch (Exception e) {
+                                }
+                            }
+                        };
+                        worker.start();
 
                         tv.setText("Connected..");
 
                         // 정기빈 : 로케이션 매니져 객체에 GPS 위치제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         // GPS 제공자의 정보가 바뀌면 콜백하도록 리스너 등록하기~!!!
                         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, // 등록할 위치제공자
-                                8000, // 통지사이의 최소 시간간격 (miliSecond)
-                                4, // 통지사이의 최소 변경거리 (m)
+                                2000, // 통지사이의 최소 시간간격 (miliSecond)
+                                2, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                         // 정기빈 : 로케이션 매니져 객체에 NETWORK 위치 제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자
-                                8000, // 통지사이의 최소 시간간격 (miliSecond)
-                                4, // 통지사이의 최소 변경거리 (m)
+                                2000, // 통지사이의 최소 시간간격 (miliSecond)
+                                2, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                     }
@@ -160,7 +148,6 @@ public class MainActivity extends Activity {
     private final LocationListener mLocationListener = new LocationListener()
     {
 
-
         // 정기빈 : 100ms(시간),1m(거리간격) 으로 콜 됨
         public void onLocationChanged(Location location)
         {
@@ -171,9 +158,6 @@ public class MainActivity extends Activity {
             Log.d("test", "onLocationChanged, location:" + location);
             double longitude = location.getLongitude(); //경도
             double latitude = location.getLatitude();   //위도
-            double altitude = location.getAltitude();   //고도
-            float accuracy = location.getAccuracy();    //정확도
-            String provider = location.getProvider();   //위치제공자
             //Gps 위치제공자에 의한 위치변화. 오차범위가 좁다.
             //Network 위치제공자에 의한 위치변화
             //Network 위치는 Gps에 비해 정확도가 많이 떨어진다.

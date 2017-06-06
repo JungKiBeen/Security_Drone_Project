@@ -36,7 +36,6 @@ using System.Speech;
 using System.Speech.Synthesis;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 
@@ -47,7 +46,7 @@ namespace MultiWiiWinGUI
     {
         #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
-        public static string ipad = "203.252.53.182";
+        public static string ipad = "172.20.10.2";
         public const int sPort = 5555;
 
         public static Socket Server, Client;
@@ -289,6 +288,31 @@ namespace MultiWiiWinGUI
 
         #region 정기빈 추가 함수
         // 정기빈 : 추가함수
+        void track_user_gps()
+        {
+            while (true)
+            {
+                double Lat = 0.0, Lng = 0.0;
+                if (missionDataGrid.Rows.Count <= 5)
+                {
+
+                    if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
+                    {
+                        Lat = user_gps.Lat;
+                        Lng = user_gps.Lng;
+
+                        addWP("WAYPOINT", 0, 0, 0, Lat, Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+                    }
+                }
+                else
+                {
+                    missionDataGrid.Rows.Clear();
+                    updateMap();
+
+                    //return;
+                }
+            }
+        }
 
         private void socket_communication()
         {
@@ -300,72 +324,74 @@ namespace MultiWiiWinGUI
             {
                 Server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Server.Bind(serverEndPoint);
-                Server.Listen(10);
 
-                Client = Server.Accept();
-
-                NetworkStream ns = new NetworkStream(Client);
-                StreamReader sr = new StreamReader(ns);
-
-                user_gps = new PointLatLng(0.0, 0.0);
-                double Lat = 0.0, Lng = 0.0;
-                if (Client.Connected)
+                while (true)
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            string data = sr.ReadLine();
+                    Server.Listen(10);
 
+                    Client = Server.Accept();
+
+                    NetworkStream ns = new NetworkStream(Client);
+                    StreamReader sr = new StreamReader(ns);
+
+                    user_gps = new PointLatLng(0.0, 0.0);
+                    double Lat = 0.0, Lng = 0.0;
+
+                    while (Client.Connected)
+                    {
+
+                        string data = sr.ReadLine();
+
+                        if (string.IsNullOrEmpty(data) == false)
+                        {
                             string[] strlist = data.Split('\x020');
 
-                            if (!double.TryParse(strlist[0].Replace("\n", ""), out Lat))
+                            strlist[0].Replace("\n", "");
+                            strlist[1].Replace("\n", "");
+                            bool is_num_lat = double.TryParse(strlist[0], out Lat);
+                            bool is_num_lng = double.TryParse(strlist[1], out Lng);
+
+                            if (missionDataGrid.Rows.Count <= 9)
                             {
-                                continue;
+                                if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
+                                {
+                                    if ((is_num_lat == true) && (is_num_lng == true))
+                                    {
+                                        if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
+                                        {
+                                            user_gps.Lat = Lat;
+                                            user_gps.Lng = Lng;
+
+                                            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+                                        }
+                                    }
+                                }
                             }
 
-                            if (!double.TryParse(strlist[1].Replace("\n", ""), out Lng))
+                            else
                             {
-                                continue;
-                            }
 
-                            Array.Clear(strlist, 0, strlist.Length);
+                                //missionDataGrid.Rows.RemoveAt(1); // home is 0
+                                //updateMap();
 
-                            if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
-                            {
-                                if (missionDataGrid.Rows.Count <= 6)
-                                {
-                                    user_gps.Lat = Lat;
-                                    user_gps.Lng = Lng;
-                                    addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
-                                }
-
-                                else
-                                {
-                                    missionDataGrid.Rows.Clear();
-                                    updateMap();
-                                    //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    //return;
-                                }
+                                missionDataGrid.Rows.Clear();
+                                updateMap();
+                                Thread.Sleep(1000);
+                                //return;
                             }
                         }
-                        catch (FormatException fe) { continue; }
                     }
+
+                    Client.Close();
                 }
-            }
-            catch (SocketException socketEx)
-            {
 
             }
-            catch (Exception commonEx)
-            {
 
-            }
-            finally
+            catch (Exception e)
             {
-                Server.Close();
-                Client.Close();
+                MessageBox.Show(e.Message + "\n" + e.StackTrace);
             }
+            Server.Close();
         }
 
 
@@ -2381,18 +2407,15 @@ namespace MultiWiiWinGUI
                 lNavState.Text = sNavState[mw_gui.nav_state];
 
 
-                try
+                //Highlight actual mission step
+                for (int i = 0; i < missionDataGrid.RowCount; i++) missionDataGrid.Rows[i].DefaultCellStyle.BackColor = Color.FromArgb(255, 64, 64, 64);
+                if (mw_gui.gps_mode == 3)
                 {
-                    //Highlight actual mission step
-                    for (int i = 0; i < missionDataGrid.RowCount; i++) missionDataGrid.Rows[i].DefaultCellStyle.BackColor = Color.FromArgb(255, 64, 64, 64);
-                    if (mw_gui.gps_mode == 3)
-                    {
 
-                        if (missionDataGrid.RowCount >= mw_gui.wp_number) missionDataGrid.Rows[mw_gui.wp_number - 1].DefaultCellStyle.BackColor = Color.Tomato;
+                    if (missionDataGrid.RowCount >= mw_gui.wp_number) missionDataGrid.Rows[mw_gui.wp_number - 1].DefaultCellStyle.BackColor = Color.Tomato;
 
-                    }
                 }
-                catch (Exception e) { }
+
 
 
 
@@ -3683,13 +3706,9 @@ namespace MultiWiiWinGUI
                     int answer;
                     if (item.Tag != null && rc.InnerMarker != null && int.TryParse(rc.InnerMarker.Tag.ToString(), out answer))
                     {
-                        try
-                        {
-                            missionDataGrid.CurrentCell = missionDataGrid[0, answer - 1];
-                            item.ToolTipText = "Altitude: " + missionDataGrid[ALTCOL.Index, answer - 1].Value.ToString() + "m";
-                            item.ToolTipMode = MarkerTooltipMode.OnMouseOver;
-                        }
-                        catch (Exception e) { }
+                        missionDataGrid.CurrentCell = missionDataGrid[0, answer - 1];
+                        item.ToolTipText = "Altitude: " + missionDataGrid[ALTCOL.Index, answer - 1].Value.ToString() + "m";
+                        item.ToolTipMode = MarkerTooltipMode.OnMouseOver;
                     }
 
 
@@ -4200,29 +4219,23 @@ namespace MultiWiiWinGUI
 
         private void missionDataGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            if (e.RowIndex < 0) { return; }
+            if (e.ColumnIndex == DEL.Index && (e.RowIndex + 0) < missionDataGrid.RowCount) // delete
             {
-                if (e.RowIndex < 0) { return; }
-                if (e.ColumnIndex == DEL.Index && (e.RowIndex + 0) < missionDataGrid.RowCount) // delete
-                {
-                    missionDataGrid.Rows.RemoveAt(e.RowIndex);
-                }
-                if (e.ColumnIndex == UP.Index && e.RowIndex != 0) // up
-                {
-                    DataGridViewRow myrow = missionDataGrid.CurrentRow;
-                    missionDataGrid.Rows.Remove(myrow);
-                    missionDataGrid.Rows.Insert(e.RowIndex - 1, myrow);
-                }
-                if (e.ColumnIndex == Down.Index && e.RowIndex < missionDataGrid.RowCount - 1) // down
-                {
-                    DataGridViewRow myrow = missionDataGrid.CurrentRow;
-                    missionDataGrid.Rows.Remove(myrow);
-                    missionDataGrid.Rows.Insert(e.RowIndex + 1, myrow);
-                }
-
+                missionDataGrid.Rows.RemoveAt(e.RowIndex);
             }
-            catch (Exception wwqee) { }
-
+            if (e.ColumnIndex == UP.Index && e.RowIndex != 0) // up
+            {
+                DataGridViewRow myrow = missionDataGrid.CurrentRow;
+                missionDataGrid.Rows.Remove(myrow);
+                missionDataGrid.Rows.Insert(e.RowIndex - 1, myrow);
+            }
+            if (e.ColumnIndex == Down.Index && e.RowIndex < missionDataGrid.RowCount - 1) // down
+            {
+                DataGridViewRow myrow = missionDataGrid.CurrentRow;
+                missionDataGrid.Rows.Remove(myrow);
+                missionDataGrid.Rows.Insert(e.RowIndex + 1, myrow);
+            }
             updateMap();
             updateIndex();
 
@@ -4240,43 +4253,47 @@ namespace MultiWiiWinGUI
          *  - 반환 : 추가된 인덱스를 리턴함
          */
 
+        static readonly object divisionlocker = new object();
+
         private void addWP(string action, int P1, int P2, int P3, double Lat, double Lon, int Alt)
         {
-
-
             try
             {
-                /*
-                //waypoint 수가 허용 치를 넘을 때 호출
-                if (missionDataGrid.Rows.Count >= 10)
+                lock (divisionlocker)
                 {
-                    missionDataGrid.Rows.Clear();
+
+                    /*
+              //waypoint 수가 허용 치를 넘을 때 호출
+              if (missionDataGrid.Rows.Count >= 10)
+              {
+                  missionDataGrid.Rows.Clear();
+                  updateMap();
+                  return;
+                  //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                  //return;
+              }
+              */
+                    selectedrow = missionDataGrid.Rows.Add();
+
+                    missionDataGrid.Rows[selectedrow].Cells[No.Index].Value = selectedrow + 1;
+                    missionDataGrid.Rows[selectedrow].Cells[Action.Index].Value = action;
+                    missionDataGrid.Rows[selectedrow].Cells[Par1.Index].Value = P1;
+                    missionDataGrid.Rows[selectedrow].Cells[Par2.Index].Value = P2;
+                    missionDataGrid.Rows[selectedrow].Cells[Par3.Index].Value = P3;
+                    missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = Lat.ToString();
+                    missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = Lon.ToString();
+                    missionDataGrid.Rows[selectedrow].Cells[ALTCOL.Index].Value = Alt;
+
+                    missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
+
                     updateMap();
-                    return;
-                    //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    //return;
                 }
-                */
-                selectedrow = missionDataGrid.Rows.Add();
-
-                missionDataGrid.Rows[selectedrow].Cells[No.Index].Value = selectedrow + 1;
-                missionDataGrid.Rows[selectedrow].Cells[Action.Index].Value = action;
-                missionDataGrid.Rows[selectedrow].Cells[Par1.Index].Value = P1;
-                missionDataGrid.Rows[selectedrow].Cells[Par2.Index].Value = P2;
-                missionDataGrid.Rows[selectedrow].Cells[Par3.Index].Value = P3;
-                missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = Lat.ToString("0.0000000");
-                missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = Lon.ToString("0.0000000");
-                missionDataGrid.Rows[selectedrow].Cells[ALTCOL.Index].Value = Alt;
-
-                missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
             }
-            catch (FormatException fe)
+            catch (Exception e)
             {
-                return;
+                MessageBox.Show(e.Message + "\n" + e.StackTrace);
             }
-
-            updateMap();
-
+           
         }
 
         public void dragMarkerCallback(string pointno, double lat, double lng, int alt)
@@ -4285,40 +4302,31 @@ namespace MultiWiiWinGUI
             {
                 return;
             }
-            try
-            {
-                selectedrow = int.Parse(pointno) - 1;
-                missionDataGrid.CurrentCell = missionDataGrid[1, selectedrow];
-                missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = lat.ToString("0.0000000");
-                missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = lng.ToString("0.0000000");
-                missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
-            }
-            catch (Exception e) { }
-
+            selectedrow = int.Parse(pointno) - 1;
+            missionDataGrid.CurrentCell = missionDataGrid[1, selectedrow];
+            missionDataGrid.Rows[selectedrow].Cells[LATCOL.Index].Value = lat.ToString();
+            missionDataGrid.Rows[selectedrow].Cells[LONCOL.Index].Value = lng.ToString();
+            missionDataGrid.Rows[selectedrow].DataGridView.EndEdit();
 
         }
 
         private void updateIndex()
         {
-            try
+            for (int a = 0; a < missionDataGrid.Rows.Count - 0; a++)
             {
-                for (int a = 0; a < missionDataGrid.Rows.Count - 0; a++)
+                missionDataGrid.Rows[a].Cells[No.Index].Value = a + 1;
+                if (missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString() == "RTH")
                 {
-                    missionDataGrid.Rows[a].Cells[No.Index].Value = a + 1;
-                    if (missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString() == "RTH")
-                    {
-                        missionDataGrid.Rows[a].Cells[LATCOL.Index].Value = 0;
-                        missionDataGrid.Rows[a].Cells[LONCOL.Index].Value = 0;
-                    }
-                    if (missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString() == "JUMP")
-                    {
-                        missionDataGrid.Rows[a].Cells[LATCOL.Index].Value = 0;
-                        missionDataGrid.Rows[a].Cells[LONCOL.Index].Value = 0;
-                    }
+                    missionDataGrid.Rows[a].Cells[LATCOL.Index].Value = 0;
+                    missionDataGrid.Rows[a].Cells[LONCOL.Index].Value = 0;
                 }
-                missionDataGrid.EndEdit();
+                if (missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString() == "JUMP")
+                {
+                    missionDataGrid.Rows[a].Cells[LATCOL.Index].Value = 0;
+                    missionDataGrid.Rows[a].Cells[LONCOL.Index].Value = 0;
+                }
             }
-            catch (Exception e) { }
+            missionDataGrid.EndEdit();
         }
 
 
@@ -4342,137 +4350,125 @@ namespace MultiWiiWinGUI
                 GMOverlayPOI.Markers.Clear();
             }
 
-            try
+            for (int a = 0; a < missionDataGrid.Rows.Count - 0; a++)
             {
-                for (int a = 0; a < missionDataGrid.Rows.Count - 0; a++)
+                string sAction = missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString();
+                string sAlt = missionDataGrid.Rows[a].Cells[ALTCOL.Index].Value.ToString(); // alt
+                string sLat = missionDataGrid.Rows[a].Cells[LATCOL.Index].Value.ToString(); // lat
+                string sLon = missionDataGrid.Rows[a].Cells[LONCOL.Index].Value.ToString(); // lng
+
+                if (sAction == "WAYPOINT") command = WP_ACTION.WAYPOINT;
+                if (sAction == "POSHOLD_UNLIM") command = WP_ACTION.HOLD_UNLIM;
+                if (sAction == "POSHOLD_TIME") command = WP_ACTION.HOLD_TIME;
+                if (sAction == "RTH") command = WP_ACTION.RTH;
+                if (sAction == "SET_HEAD") command = WP_ACTION.SET_HEAD;
+                if (sAction == "SET_POI") command = WP_ACTION.SET_POI;
+                if (sAction == "LAND") command = WP_ACTION.LAND;
+
+                if (sLon == "0" || sLat == "0")
+                    continue;
+                if (sLon == "?" || sLat == "?")
+                    continue;
+                if (sAction == "JUMP")  //Not shown 
+                    continue;
+                if (sAction == "RTH")   //Not shown
+                    break;
+                if (sAction == "SET_HEAD") //Not shown
+                    continue;
+                if (sAction == "SET_POI")
                 {
-                    string sAction = missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString();
-                    string sAlt = missionDataGrid.Rows[a].Cells[ALTCOL.Index].Value.ToString(); // alt
-                    string sLat = missionDataGrid.Rows[a].Cells[LATCOL.Index].Value.ToString(); // lat
-                    string sLon = missionDataGrid.Rows[a].Cells[LONCOL.Index].Value.ToString(); // lng
-
-                    if (sAction == "WAYPOINT") command = WP_ACTION.WAYPOINT;
-                    if (sAction == "POSHOLD_UNLIM") command = WP_ACTION.HOLD_UNLIM;
-                    if (sAction == "POSHOLD_TIME") command = WP_ACTION.HOLD_TIME;
-                    if (sAction == "RTH") command = WP_ACTION.RTH;
-                    if (sAction == "SET_HEAD") command = WP_ACTION.SET_HEAD;
-                    if (sAction == "SET_POI") command = WP_ACTION.SET_POI;
-                    if (sAction == "LAND") command = WP_ACTION.LAND;
-
-                    if (sLon == "0" || sLat == "0")
-                        continue;
-                    if (sLon == "?" || sLat == "?")
-                        continue;
-                    if (sAction == "JUMP")  //Not shown 
-                        continue;
-                    if (sAction == "RTH")   //Not shown
-                        break;
-                    if (sAction == "SET_HEAD") //Not shown
-                        continue;
-                    if (sAction == "SET_POI")
-                    {
-                        //add a special marker
-                        AddPOIMarker((a + 1).ToString(), double.Parse(sLon), double.Parse(sLat));
-                        continue;
-                    }
-
-                    AddWPMarker((a + 1).ToString(), double.Parse(sLon), double.Parse(sLat), (int)double.Parse(sAlt), null, command);
-                    //POSHOLD UNLIM marks the end of the mission
-                    if (sAction == "POSHOLD_UNLIM")
-                        break;
-
-                    //LAND here also marks the end of the mission
-                    if (sAction == "LAND")
-                        break;
-
+                    //add a special marker
+                    AddPOIMarker((a + 1).ToString(), double.Parse(sLon), double.Parse(sLat));
+                    continue;
                 }
 
-                RegenerateMissionRoute();
-                lDistance.Text = String.Format("Mission total dist.:{0:N1} m", GMRouteMission.Distance * 1000);
+                AddWPMarker((a + 1).ToString(), double.Parse(sLon), double.Parse(sLat), (int)double.Parse(sAlt), null, command);
+                //POSHOLD UNLIM marks the end of the mission
+                if (sAction == "POSHOLD_UNLIM")
+                    break;
+
+                //LAND here also marks the end of the mission
+                if (sAction == "LAND")
+                    break;
+
             }
-            catch (Exception e) { }
+
+            RegenerateMissionRoute();
+            lDistance.Text = String.Format("Mission total dist.:{0:N1} m", GMRouteMission.Distance * 1000);
         }
 
 
 
         private void change_datagrid_header(string sAction)
         {
-            try
+            if (sAction == "WAYPOINT" || sAction == "POSHOLD_UNLIM")
             {
-                if (sAction == "WAYPOINT" || sAction == "POSHOLD_UNLIM")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[2].HeaderText = "";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
 
-                    missionDataGrid.Columns[5].HeaderText = "Lat";
-                    missionDataGrid.Columns[6].HeaderText = "Lon";
-                    missionDataGrid.Columns[7].HeaderText = "Alt";
-                }
-                if (sAction == "POSHOLD_TIME")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "Sec";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "Lat";
-                    missionDataGrid.Columns[6].HeaderText = "Lon";
-                    missionDataGrid.Columns[7].HeaderText = "Alt";
-                }
-                if (sAction == "RTH")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "Land";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "";
-                    missionDataGrid.Columns[6].HeaderText = "";
-                    missionDataGrid.Columns[7].HeaderText = "Alt";
-                }
-
-                if (sAction == "JUMP")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "WP#";
-                    missionDataGrid.Columns[3].HeaderText = "Rep";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "";
-                    missionDataGrid.Columns[6].HeaderText = "";
-                    missionDataGrid.Columns[7].HeaderText = "";
-                }
-
-                if (sAction == "SET_POI")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "Lat";
-                    missionDataGrid.Columns[6].HeaderText = "Lon";
-                    missionDataGrid.Columns[7].HeaderText = "";
-                }
-
-                if (sAction == "SET_HEAD")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "head";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "";
-                    missionDataGrid.Columns[6].HeaderText = "";
-                    missionDataGrid.Columns[7].HeaderText = "";
-                }
-
-                if (sAction == "LAND")
-                {
-                    missionDataGrid.Columns[2].HeaderText = "";
-                    missionDataGrid.Columns[3].HeaderText = "";
-                    missionDataGrid.Columns[4].HeaderText = "";
-                    missionDataGrid.Columns[5].HeaderText = "Lat";
-                    missionDataGrid.Columns[6].HeaderText = "Lon";
-                    missionDataGrid.Columns[7].HeaderText = "Alt";
-                }
-
+                missionDataGrid.Columns[5].HeaderText = "Lat";
+                missionDataGrid.Columns[6].HeaderText = "Lon";
+                missionDataGrid.Columns[7].HeaderText = "Alt";
             }
-            catch (Exception e) { }
+            if (sAction == "POSHOLD_TIME")
+            {
+                missionDataGrid.Columns[2].HeaderText = "Sec";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "Lat";
+                missionDataGrid.Columns[6].HeaderText = "Lon";
+                missionDataGrid.Columns[7].HeaderText = "Alt";
+            }
+            if (sAction == "RTH")
+            {
+                missionDataGrid.Columns[2].HeaderText = "Land";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "";
+                missionDataGrid.Columns[6].HeaderText = "";
+                missionDataGrid.Columns[7].HeaderText = "Alt";
+            }
 
+            if (sAction == "JUMP")
+            {
+                missionDataGrid.Columns[2].HeaderText = "WP#";
+                missionDataGrid.Columns[3].HeaderText = "Rep";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "";
+                missionDataGrid.Columns[6].HeaderText = "";
+                missionDataGrid.Columns[7].HeaderText = "";
+            }
 
+            if (sAction == "SET_POI")
+            {
+                missionDataGrid.Columns[2].HeaderText = "";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "Lat";
+                missionDataGrid.Columns[6].HeaderText = "Lon";
+                missionDataGrid.Columns[7].HeaderText = "";
+            }
 
+            if (sAction == "SET_HEAD")
+            {
+                missionDataGrid.Columns[2].HeaderText = "head";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "";
+                missionDataGrid.Columns[6].HeaderText = "";
+                missionDataGrid.Columns[7].HeaderText = "";
+            }
+
+            if (sAction == "LAND")
+            {
+                missionDataGrid.Columns[2].HeaderText = "";
+                missionDataGrid.Columns[3].HeaderText = "";
+                missionDataGrid.Columns[4].HeaderText = "";
+                missionDataGrid.Columns[5].HeaderText = "Lat";
+                missionDataGrid.Columns[6].HeaderText = "Lon";
+                missionDataGrid.Columns[7].HeaderText = "Alt";
+            }
         }
 
 
@@ -4490,13 +4486,8 @@ namespace MultiWiiWinGUI
         private void missionDataGrid_CellValidated(object sender, DataGridViewCellEventArgs e)
         {
             selectedrow = e.RowIndex;
-            try
-            {
-                string sAction = missionDataGrid[Action.Index, selectedrow].Value.ToString();
-                change_datagrid_header(sAction);
-
-            }
-            catch (Exception e3e) { }
+            string sAction = missionDataGrid[Action.Index, selectedrow].Value.ToString();
+            change_datagrid_header(sAction);
 
         }
 
@@ -4631,26 +4622,21 @@ namespace MultiWiiWinGUI
             tw.WriteStartElement("MISSION");
             tw.WriteStartElement("VERSION value=\"" + sVersion + "\""); tw.WriteEndElement();
 
-            try
+            for (int i = 0; i < missionDataGrid.Rows.Count; i++)
             {
-                for (int i = 0; i < missionDataGrid.Rows.Count; i++)
-                {
-                    tw.WriteStartElement("MISSIONITEM no=\"" + (i + 1) + "\" " +
-                                         "action=\"" + missionDataGrid.Rows[i].Cells[Action.Index].Value + "\" " +
-                                         "parameter1=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par1.Index].Value) + "\" " +
-                                         "parameter2=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par2.Index].Value) + "\" " +
-                                         "parameter3=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par3.Index].Value) + "\" " +
-                                         "lat=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LATCOL.Index].Value) + "\" " +
-                                         "lon=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LONCOL.Index].Value) + "\" " +
-                                         "alt=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[ALTCOL.Index].Value) + "\"");
-                    tw.WriteEndElement();
-                }
+                tw.WriteStartElement("MISSIONITEM no=\"" + (i + 1) + "\" " +
+                                     "action=\"" + missionDataGrid.Rows[i].Cells[Action.Index].Value + "\" " +
+                                     "parameter1=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par1.Index].Value) + "\" " +
+                                     "parameter2=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par2.Index].Value) + "\" " +
+                                     "parameter3=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[Par3.Index].Value) + "\" " +
+                                     "lat=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LATCOL.Index].Value) + "\" " +
+                                     "lon=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[LONCOL.Index].Value) + "\" " +
+                                     "alt=\"" + Convert.ToString(missionDataGrid.Rows[i].Cells[ALTCOL.Index].Value) + "\"");
                 tw.WriteEndElement();
-                tw.WriteEndDocument();
-                tw.Close();
             }
-            catch (Exception e) { }
-
+            tw.WriteEndElement();
+            tw.WriteEndDocument();
+            tw.Close();
 
         }
 
@@ -5087,68 +5073,63 @@ namespace MultiWiiWinGUI
                 }
             }
 
-            try
+            for (a = 0; a < missionDataGrid.Rows.Count - 0; a++)
             {
-                for (a = 0; a < missionDataGrid.Rows.Count - 0; a++)
+                //Put together a waypoint info based on the grid.
+                string sAction = missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString();
+
+                action = 0;     //default (switch case does have issues with strings)
+                if (sAction == "WAYPOINT") action = WP_ACTION.WAYPOINT;
+                if (sAction == "POSHOLD_UNLIM") action = WP_ACTION.HOLD_UNLIM;
+                if (sAction == "POSHOLD_TIME") action = WP_ACTION.HOLD_TIME;
+                if (sAction == "RTH") action = WP_ACTION.RTH;
+                if (sAction == "JUMP") action = WP_ACTION.JUMP;
+                if (sAction == "SET_POI") action = WP_ACTION.SET_POI;
+                if (sAction == "SET_HEAD") action = WP_ACTION.SET_HEAD;
+                if (sAction == "LAND") action = WP_ACTION.LAND;
+
+                altitude = Convert.ToInt32(missionDataGrid.Rows[a].Cells[ALTCOL.Index].Value.ToString()); // alt
+                p1 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par1.Index].Value.ToString()); // parameter
+                p2 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par2.Index].Value.ToString()); // parameter
+                p3 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par3.Index].Value.ToString()); // parameter
+
+                lat = Convert.ToDouble(missionDataGrid.Rows[a].Cells[LATCOL.Index].Value.ToString()); // lat
+                lon = Convert.ToDouble(missionDataGrid.Rows[a].Cells[LONCOL.Index].Value.ToString()); // lng
+
+                flag = 0;
+                if (a == (missionDataGrid.Rows.Count - 1)) flag = 0xa5;
+
+                sendWPToMultiWii(serialPort, a + 1, action, lat, lon, altitude, p1, p2, p3, flag);
+
+                qStatus = Query_WP(Convert.ToByte(a + 1));
+
+                if (qStatus == WP_Query.Timeout)
                 {
-                    //Put together a waypoint info based on the grid.
-                    string sAction = missionDataGrid.Rows[a].Cells[Action.Index].Value.ToString();
-
-                    action = 0;     //default (switch case does have issues with strings)
-                    if (sAction == "WAYPOINT") action = WP_ACTION.WAYPOINT;
-                    if (sAction == "POSHOLD_UNLIM") action = WP_ACTION.HOLD_UNLIM;
-                    if (sAction == "POSHOLD_TIME") action = WP_ACTION.HOLD_TIME;
-                    if (sAction == "RTH") action = WP_ACTION.RTH;
-                    if (sAction == "JUMP") action = WP_ACTION.JUMP;
-                    if (sAction == "SET_POI") action = WP_ACTION.SET_POI;
-                    if (sAction == "SET_HEAD") action = WP_ACTION.SET_HEAD;
-                    if (sAction == "LAND") action = WP_ACTION.LAND;
-
-                    altitude = Convert.ToInt32(missionDataGrid.Rows[a].Cells[ALTCOL.Index].Value.ToString()); // alt
-                    p1 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par1.Index].Value.ToString()); // parameter
-                    p2 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par2.Index].Value.ToString()); // parameter
-                    p3 = Convert.ToInt16(missionDataGrid.Rows[a].Cells[Par3.Index].Value.ToString()); // parameter
-
-                    lat = Convert.ToDouble(missionDataGrid.Rows[a].Cells[LATCOL.Index].Value.ToString()); // lat
-                    lon = Convert.ToDouble(missionDataGrid.Rows[a].Cells[LONCOL.Index].Value.ToString()); // lng
-
-                    flag = 0;
-                    if (a == (missionDataGrid.Rows.Count - 1)) flag = 0xa5;
-
-                    sendWPToMultiWii(serialPort, a + 1, action, lat, lon, altitude, p1, p2, p3, flag);
-
-                    qStatus = Query_WP(Convert.ToByte(a + 1));
-
-                    if (qStatus == WP_Query.Timeout)
-                    {
-                        MessageBox.Show("No answer from FC, mission upload aborted. Try reading mission again.", "Answer timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    }
-
-                    if (qStatus == WP_Query.Error)
-                    {
-                        MessageBox.Show("Error condition occured, most likely Navigatgion is in progress, land, disarm and try again.", "Upload error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    }
-
-                    //It is possible that we already have a mission in EEPROM and the write command did not go through
-                    //In this case the waypoint reload will be successfull, but data comes from pervious mission
-
-                    //Check wp_action and lat/lon to make it sure
-                    if ((mission_step.action != action) || (mission_step.lat != (int)(Math.Round(lat * 10000000))) || (mission_step.lon != (int)(Math.Round(lon * 10000000))))
-                    {
-                        MessageBox.Show("Upload failed - most likely a communication error\r\nCheck copter, comms and try again.", "Upload error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        qStatus = WP_Query.Error;
-                        break;
-                    }
+                    MessageBox.Show("No answer from FC, mission upload aborted. Try reading mission again.", "Answer timeout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
                 }
-                if (qStatus == WP_Query.OK)
+
+                if (qStatus == WP_Query.Error)
                 {
-                    MessageBox.Show("Mission successfully uploaded.\r\nIt is recommended to re-download your mission for double checking.", "Upload completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Error condition occured, most likely Navigatgion is in progress, land, disarm and try again.", "Upload error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break;
+                }
+
+                //It is possible that we already have a mission in EEPROM and the write command did not go through
+                //In this case the waypoint reload will be successfull, but data comes from pervious mission
+
+                //Check wp_action and lat/lon to make it sure
+                if ((mission_step.action != action) || (mission_step.lat != (int)(Math.Round(lat * 10000000))) || (mission_step.lon != (int)(Math.Round(lon * 10000000))))
+                {
+                    MessageBox.Show("Upload failed - most likely a communication error\r\nCheck copter, comms and try again.", "Upload error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    qStatus = WP_Query.Error;
+                    break;
                 }
             }
-            catch (Exception wrea) { }
-
+            if (qStatus == WP_Query.OK)
+            {
+                MessageBox.Show("Mission successfully uploaded.\r\nIt is recommended to re-download your mission for double checking.", "Upload completed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
 
@@ -5268,11 +5249,11 @@ namespace MultiWiiWinGUI
 
         }
 
+   
         private void tsMenuAddWP_Click(object sender, EventArgs e)
         {
-            addWP("WAYPOINT", 0, 0, 0, start.Lat, start.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
         }
-
+        
 
         private void tsMenuAddPosholdTimed_Click(object sender, EventArgs e)
         {
