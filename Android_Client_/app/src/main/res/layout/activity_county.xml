@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button android:id="@+id/county_btn1"
+        android:layout_width="match_parent"
+        android:background="#a9a9a9"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_marginTop="1dp"
+        android:text="Seoul"
+        android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn2" android:layout_width="match_parent" android:background="#4682b4" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Gyeonggi-do" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn3" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Incheon" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn4" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Gangwon-do" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn5" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Chungcheong-do" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn6" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Jeolla-do" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn7" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Gyeongsang-do" android:textSize="30dp"/>
+    <Button android:id="@+id/county_btn8" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Jeju" android:textSize="30dp"/>
+</LinearLayout>

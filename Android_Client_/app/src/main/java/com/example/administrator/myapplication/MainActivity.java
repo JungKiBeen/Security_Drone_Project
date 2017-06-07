@@ -3,6 +3,7 @@ package com.example.administrator.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -10,7 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.io.BufferedReader;
@@ -20,18 +21,17 @@ import java.net.Socket;
 
 public class MainActivity extends Activity {
 
-    TextView tv;
     ToggleButton tb;
-    EditText edittext;
+    EditText lat_text;
+    EditText lng_text;
+
 
     private Socket socket;
     BufferedReader socket_in;
     PrintWriter socket_out;
 
-    TextView output;
     String data;
-    String ipad;
-    boolean is_valid;
+    String ip;
 
 
     @Override
@@ -54,15 +54,42 @@ public class MainActivity extends Activity {
         //     ① 타이머를 설정하여 GPS_PROVIDER 에서 일정시간 응답이 없는 경우 NETWORK_PROVIDER로 전환
         //     ② 혹은, 둘다 한꺼번헤 호출하여 들어오는 값을 사용하는 방식.
 
-        tv = (TextView) findViewById(R.id.textView2);
-        tv.setText("");
-        edittext = (EditText)findViewById(R.id.edittext);
         tb = (ToggleButton)findViewById(R.id.toggle1);
+        lat_text= (EditText)findViewById(R.id.lat);
+        lng_text = (EditText)findViewById(R.id.lng);
+
+        Intent intent = getIntent();
+        ip = intent.getStringExtra("IP");
 
         // LocationManager 객체를 얻어온다
         final LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Thread worker = new Thread()
+        {
+            public void run()
+            {
+                try {
+                    socket = new Socket(ip, 5555);        // 정기빈: 서버  측 아이피 주소
+                    socket_out = new PrintWriter(socket.getOutputStream(), true);
 
 
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+
+                try
+                {
+                    while (true)
+                    {
+
+                    }
+                } catch (Exception e) {
+                }
+            }
+        };
+        worker.start();
+        Toast.makeText(getApplicationContext(),"서버에 연결되었습니다.", Toast.LENGTH_LONG).show();
 
         tb.setOnClickListener(new View.OnClickListener()
         {
@@ -73,35 +100,8 @@ public class MainActivity extends Activity {
                 try{
                     if(tb.isChecked())
                     {
-                        ipad = edittext.getText().toString();
 
-                        Thread worker = new Thread()
-                        {
-                            public void run()
-                            {
-                                try {
-                                    socket = new Socket(ipad, 5555);        // 정기빈: 서버  측 아이피 주소
-                                    socket_out = new PrintWriter(socket.getOutputStream(), true);
-
-
-                                } catch (IOException e)
-                                {
-                                    e.printStackTrace();
-                                }
-
-                                try
-                                {
-                                    while (true)
-                                    {
-
-                                    }
-                                } catch (Exception e) {
-                                }
-                            }
-                        };
-                        worker.start();
-
-                        tv.setText("Connected..");
+                        Toast.makeText(getApplicationContext(),"약 10분 후 드론이 도착합니다", Toast.LENGTH_LONG).show();
 
                         // 정기빈 : 로케이션 매니져 객체에 GPS 위치제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         // GPS 제공자의 정보가 바뀌면 콜백하도록 리스너 등록하기~!!!
@@ -120,10 +120,8 @@ public class MainActivity extends Activity {
 
                     else
                     {
-                        tv.setText("Disconnected..");
+                        Toast.makeText(getApplicationContext(),"안심콥터 서비스를 종료합니다", Toast.LENGTH_LONG).show();
                         lm.removeUpdates(mLocationListener);  //  미수신할때는 반드시 자원해체를 해주어야 한다.
-
-
                     }
                 }
                 catch(SecurityException ex){}
@@ -156,14 +154,16 @@ public class MainActivity extends Activity {
 
 
             Log.d("test", "onLocationChanged, location:" + location);
+
             double longitude = location.getLongitude(); //경도
             double latitude = location.getLatitude();   //위도
             //Gps 위치제공자에 의한 위치변화. 오차범위가 좁다.
             //Network 위치제공자에 의한 위치변화
             //Network 위치는 Gps에 비해 정확도가 많이 떨어진다.
 
-
-            data = latitude + " " +longitude;
+            lat_text.setText("Latitude : " + latitude);
+            lng_text.setText("Longitude : " + longitude);
+            data = latitude + " " + longitude;
 
             Log.w("NETWORK", " " + data);
             if(data != null)

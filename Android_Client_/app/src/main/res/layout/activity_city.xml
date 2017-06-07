@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText android:id="@+id/edittext" android:layout_width="match_parent" android:layout_height="40dp" android:hint="Input Server IP"/>
+
+    <Button android:id="@+id/city_btn1"
+        android:layout_width="match_parent"
+        android:background="#a9a9a9"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:text="Sungnam"
+        android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn2" android:layout_width="match_parent" android:background="#4682b4" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Suwon" android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn3" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Ansan" android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn4" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Bucheon" android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn5" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Hwasung" android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn6" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Gunpho" android:textSize="30dp"/>
+    <Button android:id="@+id/city_btn7" android:layout_width="match_parent" android:background="#a9a9a9" android:textColor="#fff"  android:textStyle="bold" android:layout_weight="1" android:layout_height="0dp" android:layout_marginTop="1dp" android:text="Hanam" android:textSize="30dp"/>
+</LinearLayout>

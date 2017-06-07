@@ -46,7 +46,7 @@ namespace MultiWiiWinGUI
     {
         #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
-        public static string ipad = "172.20.10.2";
+        public static string ipad = "192.168.25.25";
         public const int sPort = 5555;
 
         public static Socket Server, Client;
@@ -54,7 +54,7 @@ namespace MultiWiiWinGUI
         public PointLatLng user_gps;
         public static byte[] getByte = new byte[1024];
         public static byte[] setByte = new byte[1024];
-
+        public bool accept_service; // Accept security drone service 선택 시 false 변환, socket_communication 쓰레드 작동 허용
         /* 정기빈 : 추가 변수 */
 
         #endregion
@@ -285,6 +285,10 @@ namespace MultiWiiWinGUI
 
         #endregion
 
+        private void accept_drone_service(object sender, EventArgs e)
+        {
+            accept_service = false;
+        }
 
         #region 정기빈 추가 함수
         // 정기빈 : 추가함수
@@ -319,17 +323,23 @@ namespace MultiWiiWinGUI
 
             IPAddress serverIP = IPAddress.Parse(ipad);
             IPEndPoint serverEndPoint = new IPEndPoint(serverIP, sPort);
+            
+            accept_service = true;
 
             try
             {
                 Server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Server.Bind(serverEndPoint);
 
+               
+
                 while (true)
                 {
                     Server.Listen(10);
 
                     Client = Server.Accept();
+                    MessageBox.Show("AnsimCopter service call requested");
+                    while (accept_service) ;    // 쓰레드를 가둠
 
                     NetworkStream ns = new NetworkStream(Client);
                     StreamReader sr = new StreamReader(ns);
@@ -383,6 +393,7 @@ namespace MultiWiiWinGUI
                     }
 
                     Client.Close();
+                    accept_service = true;
                 }
 
             }
@@ -5252,6 +5263,7 @@ namespace MultiWiiWinGUI
    
         private void tsMenuAddWP_Click(object sender, EventArgs e)
         {
+
         }
         
 
