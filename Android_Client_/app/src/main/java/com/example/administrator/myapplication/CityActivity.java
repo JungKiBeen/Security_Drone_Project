@@ -21,7 +21,7 @@ public class CityActivity extends Activity
     Button city_btn4;
     Button city_btn5;
     EditText edittext;
-    static String ip = "172.20.10.2";
+    String ip;
 
 
     @Override protected void onCreate(Bundle savedInstanceState)
@@ -88,8 +88,17 @@ public class CityActivity extends Activity
             public void onClick(View view)
             {
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                ip = edittext.getText().toString();
+                String temp = edittext.getText().toString();
 
+                if(!temp.equals(""))
+                {
+                    ip = temp;
+                }
+
+                else
+                {
+                    ip = "172.20.10.2";
+                }
                 intent.putExtra("IP",ip);
                 startActivity(intent);
                 finish();

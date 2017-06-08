@@ -1,15 +1,4 @@
-﻿/*
- * MultiWii Windows GUI by Andras Schaffer (EOSBandi)
- * February  2014     V2.3 Beta
- * 
- * LogBrowser is based on ArduPlanner Mega code written by Michael Oborne http://www.diydrones.com 
- * Instrument controls are based on AvionicsInstrument Controls written by Guillaume CHOUTEAU http://www.codeproject.com/Articles/27411/C-Avionic-Instrument-Controls
- * Video capture code is using Aforge.Net Framework http://www.aforgenet.com
- * Graph parts are using ZedGraph control http://sourceforge.net/projects/zedgraph/
- * 
-*/
-
-using System;
+﻿using System;
 using System.Text;
 using System.ComponentModel;
 using System.Drawing;
@@ -46,16 +35,16 @@ namespace MultiWiiWinGUI
     {
         #region 정기빈 추가변수
         /* 정기빈 : 추가 변수 */
-        public static string ipad = "192.168.25.25";
+        public static string ipad = "172.20.10.2";
         public const int sPort = 5555;
 
         public static Socket Server, Client;
 
         public PointLatLng user_gps;
-        public static byte[] getByte = new byte[1024];
-        public static byte[] setByte = new byte[1024];
         public bool accept_service; // Accept security drone service 선택 시 false 변환, socket_communication 쓰레드 작동 허용
-        /* 정기빈 : 추가 변수 */
+                                    /* 정기빈 : 추가 변수 */
+
+        delegate void addWPCallBack(string action, int P1, int P2, int P3, double Lat, double Lon, int Alt);
 
         #endregion
 
@@ -284,7 +273,7 @@ namespace MultiWiiWinGUI
 
 
         #endregion
-
+        delegate void clearMissionCallBack();
         private void accept_drone_service(object sender, EventArgs e)
         {
             accept_service = false;
@@ -318,20 +307,36 @@ namespace MultiWiiWinGUI
             }
         }
 
+
+    
+        private void clearMission()
+        {
+            if (this.missionDataGrid.InvokeRequired == true)
+            {
+                clearMissionCallBack dele = new clearMissionCallBack(clearMission);
+                this.Invoke(dele, new object[] { });
+            }
+            //Clean up current mission  
+
+            else
+            {
+                missionDataGrid.Rows.Clear();
+                updateMap();
+            }
+        }
+
         private void socket_communication()
         {
 
             IPAddress serverIP = IPAddress.Parse(ipad);
             IPEndPoint serverEndPoint = new IPEndPoint(serverIP, sPort);
-            
+
             accept_service = true;
 
             try
             {
                 Server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Server.Bind(serverEndPoint);
-
-               
 
                 while (true)
                 {
@@ -361,7 +366,7 @@ namespace MultiWiiWinGUI
                             bool is_num_lat = double.TryParse(strlist[0], out Lat);
                             bool is_num_lng = double.TryParse(strlist[1], out Lng);
 
-                            if (missionDataGrid.Rows.Count <= 9)
+                            if (missionDataGrid.Rows.Count <= 70)
                             {
                                 if ((Lat != user_gps.Lat) || (Lng != user_gps.Lng))
                                 {
@@ -372,7 +377,7 @@ namespace MultiWiiWinGUI
                                             user_gps.Lat = Lat;
                                             user_gps.Lng = Lng;
 
-                                            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
+                                            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // 4250
                                         }
                                     }
                                 }
@@ -380,13 +385,7 @@ namespace MultiWiiWinGUI
 
                             else
                             {
-
-                                //missionDataGrid.Rows.RemoveAt(1); // home is 0
-                                //updateMap();
-
-                                missionDataGrid.Rows.Clear();
-                                updateMap();
-                                Thread.Sleep(1000);
+                                clearMission();
                                 //return;
                             }
                         }
@@ -4266,24 +4265,32 @@ namespace MultiWiiWinGUI
 
         static readonly object divisionlocker = new object();
 
+
+    
         private void addWP(string action, int P1, int P2, int P3, double Lat, double Lon, int Alt)
         {
             try
             {
-                lock (divisionlocker)
-                {
 
-                    /*
-              //waypoint 수가 허용 치를 넘을 때 호출
-              if (missionDataGrid.Rows.Count >= 10)
-              {
-                  missionDataGrid.Rows.Clear();
-                  updateMap();
-                  return;
-                  //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                  //return;
-              }
-              */
+                /*
+                 //waypoint 수가 허용 치를 넘을 때 호출
+                 if (missionDataGrid.Rows.Count >= 10)
+                 {
+                     missionDataGrid.Rows.Clear();
+                     updateMap();
+                     return;
+                     //MessageBox.Show("Cannot add mission step. Maximum number of mission steps (" + Convert.ToString(mw_gui.max_wp_number) + ") reached", "Max steps reached", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                     //return;
+                 }
+                 */
+                if (this.missionDataGrid.InvokeRequired == true)
+                {
+                    addWPCallBack dele = new addWPCallBack(addWP);
+                    this.Invoke(dele, new object[] { action, P1, P2, P3, Lat, Lon, Alt });
+                }
+
+                else
+                {
                     selectedrow = missionDataGrid.Rows.Add();
 
                     missionDataGrid.Rows[selectedrow].Cells[No.Index].Value = selectedrow + 1;
@@ -4299,12 +4306,13 @@ namespace MultiWiiWinGUI
 
                     updateMap();
                 }
+                    
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message + "\n" + e.StackTrace);
             }
-           
+
         }
 
         public void dragMarkerCallback(string pointno, double lat, double lng, int alt)
@@ -5260,12 +5268,12 @@ namespace MultiWiiWinGUI
 
         }
 
-   
+
         private void tsMenuAddWP_Click(object sender, EventArgs e)
         {
-
+            addWP("WAYPOINT", 0, 0, 0, user_gps.Lat, user_gps.Lng, iDefAlt);  // (string action, int P1, int P2, int P3, double Lat, double Lon, int Alt) 
         }
-        
+
 
         private void tsMenuAddPosholdTimed_Click(object sender, EventArgs e)
         {
@@ -5342,11 +5350,13 @@ namespace MultiWiiWinGUI
 
         }
 
+       
+
+      
         private void clearMissionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Clean up current mission   
-            missionDataGrid.Rows.Clear();
-            updateMap();
+                missionDataGrid.Rows.Clear();
+                updateMap();
         }
 
         private void createCircleToolStripMenuItem_Click(object sender, EventArgs e)

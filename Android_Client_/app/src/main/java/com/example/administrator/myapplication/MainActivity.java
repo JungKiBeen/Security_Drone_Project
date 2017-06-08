@@ -106,14 +106,14 @@ public class MainActivity extends Activity {
                         // 정기빈 : 로케이션 매니져 객체에 GPS 위치제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         // GPS 제공자의 정보가 바뀌면 콜백하도록 리스너 등록하기~!!!
                         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, // 등록할 위치제공자
-                                2000, // 통지사이의 최소 시간간격 (miliSecond)
-                                2, // 통지사이의 최소 변경거리 (m)
+                                100, // 통지사이의 최소 시간간격 (miliSecond)
+                                1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                         // 정기빈 : 로케이션 매니져 객체에 NETWORK 위치 제공자 등록, 최소 시간 간격 100ms, 변경 거리 1m
                         lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자
-                                2000, // 통지사이의 최소 시간간격 (miliSecond)
-                                2, // 통지사이의 최소 변경거리 (m)
+                                100, // 통지사이의 최소 시간간격 (miliSecond)
+                                1, // 통지사이의 최소 변경거리 (m)
                                 mLocationListener);
 
                     }
