@@ -18,4 +18,15 @@ Artik Server
 
 #UCC
 
+<통합 영상>
 https://www.youtube.com/watch?v=xApJV1SluyE&feature=youtu.be
+
+
+<GPS 추적 비행 프로그램 영상>
+https://www.youtube.com/watch?v=nQI6l48E-_A&feature=youtu.be
+
+<ARTIK GPS 전달 영상>
+https://www.youtube.com/watch?v=kdQEDQstLO8&feature=youtu.be
+
+<드론 비행 영상 - 아두이노로 조립한 드론>
+https://www.youtube.com/watch?v=fPIX6R_DNTA&feature=youtu.be
